@@ -115,6 +115,12 @@ _BEGIN_STD_C
 #define _JBLEN 9
 #endif
 
+#ifdef __I86__
+/* SI, DI, BP, SP and IP, with room for the segments of far models. */
+#define _JBTYPE unsigned short
+#define _JBLEN  8
+#endif
+
 #ifdef __i386__
 #if defined(__iamcu__)
 /* Intel MCU jmp_buf only covers callee-saved registers. */

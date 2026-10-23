@@ -143,6 +143,18 @@
 #define __BUFSIZ__       16
 #endif
 
+/* 16-bit real-mode x86 (DOS). int is 16 bits; pointers are 16 bits in the
+ * tiny and small memory models. */
+#ifdef __I86__
+#undef INT_MAX
+#undef UINT_MAX
+#define INT_MAX  32767
+#define UINT_MAX 65535U
+#define __BUFSIZ__ 512
+#define __SMALL_BITFIELDS
+#define _POINTER_INT int
+#endif
+
 #if defined __MSP430__
 
 #define __BUFSIZ__ 256

@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Linker for the i8086-msdos cross files. Meson identifies the linker from
+# its --version output, which Watcom-style linkers don't have, so answer
+# that as a GNU-compatible linker. Everything else goes to wlink, or to the
+# linker named by MSDOS_LD (for example jwlink).
+#
+for arg; do
+    if [ "$arg" = "--version" ]; then
+        echo "GNU ld (i8086-msdos wrapper for wlink) 2.40"
+        exit 0
+    fi
+done
+exec "${MSDOS_LD:-wlink}" "$@"
