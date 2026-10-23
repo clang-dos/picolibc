@@ -49,9 +49,27 @@ File I/O, `stat`, directories, `rename`, `dup`/`dup2`, `isatty`, the clock
 (`time`, `gettimeofday`, `clock_gettime`, `times`, `nanosleep`) and `_exit`
 use INT 21h. DOS error codes become `errno` values in `error.c`.
 
-- Files are binary: there is no text-mode translation. Writes to a
-  character device (the console, a printer) turn LF into CR LF, and reads
-  from one drop CR.
+- Handles are in text or binary mode, as with DOS C compilers. In text
+  mode, writes turn LF into CR LF, and reads turn CR LF into LF and stop
+  at Ctrl-Z (a CR with no LF after it is kept). Binary mode reads and
+  writes bytes as they are.
+  - `fopen` opens a file in binary mode with `b` in the mode (`"rb"`,
+    `"w+b"`), and in text mode otherwise (`t`, as in `"wt"`, also asks
+    for text).
+  - `open` takes `O_TEXT` or `O_BINARY`; with neither, it uses `_fmode`,
+    which starts as `O_TEXT`.
+  - `setmode(fd, O_TEXT or O_BINARY)` (also `_setmode`, declared in
+    `<io.h>` and `<fcntl.h>`) changes a handle's mode and returns the old
+    one.
+  - The standard handles 0 to 4 start in text mode.
+  - `ftell` and `fseek` on a text stream use file offsets, so `ftell`
+    counts each line end as 2 bytes. It assumes each LF still in the
+    stdio buffer came from a CR LF.
+  - After a read stops at Ctrl-Z, the file stays at the Ctrl-Z and
+    further reads return 0 until the program seeks.
+- Creating a file with `O_TRUNC` (`fopen(..., "w")`) also writes 0 bytes
+  at its start, which truncates it on emulators (emu2) that don't empty
+  an existing file on INT 21h function 3Ch.
 - `O_APPEND` seeks to the end before each write.
 - The DOS clock is local time; it is treated as UTC. It ticks about 18
   times a second.

@@ -36,10 +36,9 @@
 #include "local-msdos.h"
 #include <unistd.h>
 
-/* Files are read as binary. Reads from a device, such as the console,
- * drop the carriage return of each CR LF line end. */
-ssize_t
-read(int fd, void *buf, size_t count)
+
+static ssize_t
+dos_read(int fd, void *buf, size_t count)
 {
     struct __msdos_regs r = { .ax = 0x3f00, .bx = (uint16_t)fd,
                               .cx = (uint16_t)count, .dx = (uint16_t)buf };
@@ -47,13 +46,69 @@ read(int fd, void *buf, size_t count)
         r.cx = 0xfffe;
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
-    size_t n = r.ax;
-    if (n && __msdos_isdevice(fd) > 0) {
-        char *p = buf, *q = buf;
-        for (size_t i = 0; i < n; i++)
-            if (p[i] != '\r')
-                *q++ = p[i];
-        n = q - p;
+    return r.ax;
+}
+
+static void
+seek_back(int fd, uint16_t n)
+{
+    uint32_t o = -(int32_t)n;
+    struct __msdos_regs r = { .ax = 0x4201, .bx = (uint16_t)fd,
+                              .cx = (uint16_t)(o >> 16), .dx = (uint16_t)o };
+    __msdos_int21(&r);
+}
+
+/* In text mode, CR LF reads as LF and Ctrl-Z ends the file. A CR is kept
+ * unless an LF follows it; from a device, such as the console, a CR at the
+ * end of the data is dropped too. */
+ssize_t
+read(int fd, void *buf, size_t count)
+{
+    int flags = __msdos_fdflags(fd);
+    if (!(flags & __MSDOS_FD_TEXT))
+        return dos_read(fd, buf, count);
+    if (flags & __MSDOS_FD_EOF)
+        return 0;
+
+    ssize_t got = dos_read(fd, buf, count);
+    if (got <= 0)
+        return got;
+    size_t n = got;
+    int device = -1;
+    char *p = buf;
+    size_t out = 0;
+    for (size_t i = 0; i < n; i++) {
+        char c = p[i];
+        if (c == 0x1a) {
+            if (device < 0)
+                device = __msdos_isdevice(fd) > 0;
+            if (!device) {
+                /* Leave the file at the Ctrl-Z, and read nothing more. */
+                seek_back(fd, n - i);
+                __msdos_set_fdflags(fd, flags | __MSDOS_FD_EOF);
+            }
+            break;
+        }
+        if (c == '\r') {
+            if (i + 1 < n) {
+                if (p[i + 1] == '\n')
+                    continue;
+            } else {
+                if (device < 0)
+                    device = __msdos_isdevice(fd) > 0;
+                if (device)
+                    continue;
+                /* Look at the next byte for the LF. */
+                char next;
+                if (dos_read(fd, &next, 1) == 1) {
+                    if (next == '\n')
+                        c = '\n';
+                    else
+                        seek_back(fd, 1);
+                }
+            }
+        }
+        p[out++] = c;
     }
-    return n;
+    return out;
 }

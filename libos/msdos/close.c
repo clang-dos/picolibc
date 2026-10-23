@@ -42,6 +42,6 @@ close(int fd)
     struct __msdos_regs r = { .ax = 0x3e00, .bx = (uint16_t)fd };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
-    __msdos_set_append(fd, 0);
+    __msdos_set_fdflags(fd, 0);
     return 0;
 }

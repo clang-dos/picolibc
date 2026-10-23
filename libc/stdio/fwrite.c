@@ -83,7 +83,7 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
                     }
                     bytes -= len;
                     cp += len;
-                    bf->pos += len;
+                    bufio_advance(bf, len);
                 }
             }
         }

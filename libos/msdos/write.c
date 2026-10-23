@@ -53,41 +53,45 @@ dos_write(int fd, const char *p, size_t n, size_t *done)
     return 0;
 }
 
-/* Files are written as binary. Writes to a device, such as the console,
- * turn each LF into CR LF. */
+/* In text mode each LF is written as CR LF. The count returned is of the
+ * caller's bytes. */
 ssize_t
 write(int fd, const void *buf, size_t count)
 {
     const char *p = buf;
-    size_t done = 0, n;
+    size_t n;
+    int flags = __msdos_fdflags(fd);
 
     if (count > 0xfffe)
         count = 0xfffe;
-    if (__msdos_append(fd)) {
+    if (flags & __MSDOS_FD_APPEND) {
         struct __msdos_regs r = { .ax = 0x4202, .bx = (uint16_t)fd };
         if (__msdos_int21(&r))
             return __msdos_error(r.ax);
     }
-    if (count == 0 || __msdos_isdevice(fd) <= 0) {
+    if (count == 0 || !(flags & __MSDOS_FD_TEXT) || !memchr(p, '\n', count)) {
         /* A write of 0 bytes truncates a file at the current position, as
          * in DOS. */
         if (dos_write(fd, p, count, &n) < 0)
             return n ? (ssize_t)n : -1;
         return n;
     }
-    while (done < count) {
-        const char *nl = memchr(p + done, '\n', count - done);
-        size_t len = nl ? (size_t)(nl - (p + done)) : count - done;
-        if (len) {
-            if (dos_write(fd, p + done, len, &n) < 0)
-                return done + n ? (ssize_t)(done + n) : -1;
-            done += len;
-        }
-        if (nl) {
-            if (dos_write(fd, "\r\n", 2, &n) < 0)
+
+    char tmp[128];
+    size_t t = 0, pending = 0, done = 0;
+    for (size_t i = 0; i <= count; i++) {
+        if (i == count || t + 2 > sizeof(tmp)) {
+            if (t && dos_write(fd, tmp, t, &n) < 0)
                 return done ? (ssize_t)done : -1;
-            done++;
+            done += pending;
+            t = pending = 0;
+            if (i == count)
+                break;
         }
+        if (p[i] == '\n')
+            tmp[t++] = '\r';
+        tmp[t++] = p[i];
+        pending++;
     }
     return done;
 }

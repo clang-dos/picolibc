@@ -107,7 +107,7 @@ fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
                     }
                     cp += len;
                     bytes -= len;
-                    bf->pos += len;
+                    bufio_advance(bf, len);
                 }
             }
         }

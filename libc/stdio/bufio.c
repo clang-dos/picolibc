@@ -66,13 +66,13 @@ __bufio_flush_locked(FILE *f)
                 break;
             }
             buf += this;
-            bf->pos += this;
+            bufio_advance(bf, this);
             bf->len -= this;
         }
         break;
     case __SRD:
         /* Move the FD back to the current read position */
-        backup = bf->len - bf->off;
+        backup = bufio_unread(bf);
         if (backup) {
             bf->pos -= backup;
             (void)bufio_lseek(bf, bf->pos, SEEK_SET);
@@ -106,7 +106,7 @@ __bufio_fill_locked(FILE *f)
 
     /* Update FD pos */
     bf->len = len;
-    bf->pos += len;
+    bufio_advance(bf, len);
     return 0;
 }
 
@@ -227,15 +227,21 @@ __bufio_seek(FILE *f, off_t offset, int whence)
     /* compute offset of the first char in the buffer */
     __off_t buf_pos = bf->pos - bf->len;
 
+    /* In a text file, buffer offsets are not file offsets. */
+    bool text = bufio_text(bf);
+
     switch (whence) {
     case SEEK_CUR:
         /* Map CUR -> SET, accounting for position within buffer */
         whence = SEEK_SET;
-        offset += buf_pos + bf->off;
+        if (text)
+            offset += bf->pos - bufio_unread(bf);
+        else
+            offset += buf_pos + bf->off;
         __fallthrough;
     case SEEK_SET:
         /* Optimize for seeks within buffer or just past buffer */
-        if (buf_pos <= offset && offset <= buf_pos + bf->len) {
+        if (!text && buf_pos <= offset && offset <= buf_pos + bf->len) {
             bf->off = offset - buf_pos;
             ret = offset;
             break;

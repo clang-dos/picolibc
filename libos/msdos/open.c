@@ -38,27 +38,6 @@
 #include <stdarg.h>
 #include <unistd.h>
 
-static uint8_t append_fds[(__MSDOS_MAX_FD + 7) / 8];
-
-int
-__msdos_append(int fd)
-{
-    if (fd < 0 || fd >= __MSDOS_MAX_FD)
-        return 0;
-    return (append_fds[fd >> 3] >> (fd & 7)) & 1;
-}
-
-void
-__msdos_set_append(int fd, int on)
-{
-    if (fd < 0 || fd >= __MSDOS_MAX_FD)
-        return;
-    if (on)
-        append_fds[fd >> 3] |= 1 << (fd & 7);
-    else
-        append_fds[fd >> 3] &= ~(1 << (fd & 7));
-}
-
 static int
 dos_open(const char *path, int access)
 {
@@ -75,6 +54,14 @@ dos_create(const char *path, uint16_t fn, int readonly)
                               .dx = (uint16_t)path };
     if (__msdos_int21(&r))
         return -(int)r.ax;
+    if (fn == 0x3c) {
+        /* DOS empties an existing file here, but some emulators (emu2)
+         * don't; writing 0 bytes at the start truncates it anyway. */
+        uint16_t fd = r.ax;
+        struct __msdos_regs w = { .ax = 0x4000, .bx = fd };
+        __msdos_int21(&w);
+        return fd;
+    }
     return r.ax;
 }
 
@@ -110,6 +97,8 @@ open(const char *path, int flags, ...)
     }
     if (fd < 0)
         return __msdos_error(-fd);
-    __msdos_set_append(fd, (flags & O_APPEND) != 0);
+    int text = (flags & O_TEXT) || (!(flags & O_BINARY) && _fmode != O_BINARY);
+    __msdos_set_fdflags(fd, ((flags & O_APPEND) ? __MSDOS_FD_APPEND : 0) |
+                                (text ? __MSDOS_FD_TEXT : 0));
     return fd;
 }

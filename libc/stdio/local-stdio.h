@@ -197,6 +197,55 @@ bufio_lseek(struct __file_bufio *bf, __off_t offset, int whence)
     return _FDEV_ERR;
 }
 
+/*
+ * DOS text files: read() and write() turn CR LF into LF and back, so the
+ * file position does not move by the bytes the buffer holds. The position
+ * is then taken from the file after each transfer, and each LF not yet
+ * read counts as the CR LF it was read from.
+ */
+#ifdef __MSDOS__
+int __msdos_is_text(int fd);
+
+static inline bool
+bufio_text(struct __file_bufio *bf)
+{
+    return !(bf->bflags & __BFPTR) && __msdos_is_text(_FDEV_BUFIO_FD(bf));
+}
+#else
+static inline bool
+bufio_text(struct __file_bufio *bf)
+{
+    (void)bf;
+    return false;
+}
+#endif
+
+/* Update the file position after reading or writing len bytes. */
+static inline void
+bufio_advance(struct __file_bufio *bf, ssize_t len)
+{
+    if (bufio_text(bf)) {
+        __off_t pos = bufio_lseek(bf, 0, SEEK_CUR);
+        if (pos >= 0) {
+            bf->pos = pos;
+            return;
+        }
+    }
+    bf->pos += len;
+}
+
+/* The bytes in the file of the buffered data not yet read. */
+static inline __off_t
+bufio_unread(struct __file_bufio *bf)
+{
+    __off_t n = bf->len - bf->off;
+    if (bufio_text(bf))
+        for (int i = bf->off; i < bf->len; i++)
+            if (bf->buf[i] == '\n')
+                n++;
+    return n;
+}
+
 static inline bool
 bufio_seekable(struct __file_bufio *bf)
 {

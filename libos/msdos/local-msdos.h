@@ -64,10 +64,24 @@ int __msdos_error(uint16_t code);
 /* Whether a handle is a character device (console, printer, NUL). */
 int __msdos_isdevice(int fd);
 
-/* Handles that track O_APPEND. DOS has 20 per program by default. */
+/* Per-handle state that DOS does not keep. DOS has 20 handles per
+ * program by default. */
 #define __MSDOS_MAX_FD 32
-int __msdos_append(int fd);
-void __msdos_set_append(int fd, int on);
+#define __MSDOS_FD_APPEND 0x01 /* O_APPEND: seek to the end before writes. */
+#define __MSDOS_FD_TEXT   0x02 /* O_TEXT: CR LF line ends, Ctrl-Z ends. */
+#define __MSDOS_FD_EOF    0x04 /* A text read reached Ctrl-Z. */
+extern uint8_t __msdos_fd_flags[__MSDOS_MAX_FD];
+static inline int
+__msdos_fdflags(int fd)
+{
+    return fd >= 0 && fd < __MSDOS_MAX_FD ? __msdos_fd_flags[fd] : 0;
+}
+static inline void
+__msdos_set_fdflags(int fd, int flags)
+{
+    if (fd >= 0 && fd < __MSDOS_MAX_FD)
+        __msdos_fd_flags[fd] = flags;
+}
 
 /* The DOS clock as seconds since 1970 (local time taken as UTC) and
  * hundredths of a second. */

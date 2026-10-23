@@ -57,6 +57,16 @@ __stdio_flags(const char *mode, int *optr)
             ret |= (__SRD | __SWR);
             o = (o & ~O_ACCMODE) | O_RDWR;
             break;
+#ifdef O_BINARY
+        case 'b':
+            o |= O_BINARY;
+            break;
+#endif
+#ifdef O_TEXT
+        case 't':
+            o |= O_TEXT;
+            break;
+#endif
         default:
             break;
         }

@@ -47,6 +47,6 @@ dup2(int fd, int fd2)
     struct __msdos_regs r = { .ax = 0x4600, .bx = (uint16_t)fd, .cx = (uint16_t)fd2 };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
-    __msdos_set_append(fd2, __msdos_append(fd));
+    __msdos_set_fdflags(fd2, __msdos_fdflags(fd) & ~__MSDOS_FD_EOF);
     return fd2;
 }

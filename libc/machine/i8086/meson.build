@@ -48,3 +48,9 @@ foreach params : targets
 			      include_directories: inc,
 			      c_args: target_c_args + c_args + arg_fnobuiltin))
 endforeach
+
+subdir('sys')
+
+if really_install
+  install_headers(['io.h'], install_dir: include_dir)
+endif
