@@ -34,17 +34,27 @@
  */
 
 #include "local-msdos.h"
+#include <stdint.h>
 #include <unistd.h>
 
 char *__msdos_brk;
 char *__msdos_heap_end;
 
+/* The room on either side of the break. A difference of near or far data
+ * pointers can overflow ptrdiff_t but fits size_t; in the huge model with a
+ * 16-bit size_t the heap is larger than size_t can hold. */
+#if PTRDIFF_MAX > SIZE_MAX
+typedef ptrdiff_t room_t;
+#else
+typedef size_t room_t;
+#endif
+
 void *
 sbrk(ptrdiff_t incr)
 {
     char *old = __msdos_brk;
-    if (incr < 0 ? (size_t)-incr > (size_t)(old - __msdos_heap_start)
-                 : (size_t)incr > (size_t)(__msdos_heap_end - old)) {
+    if (incr < 0 ? (room_t)-incr > (room_t)(old - __msdos_heap_start)
+                 : (room_t)incr > (room_t)(__msdos_heap_end - old)) {
         errno = ENOMEM;
         return (void *)-1;
     }

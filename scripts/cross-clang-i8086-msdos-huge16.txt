@@ -1,0 +1,19 @@
+# 16-bit DOS, huge memory model with a 16-bit size_t (as in Open
+# Watcom), built with the clang-dos LLVM toolchain
+# (https://github.com/clang-dos/llvm). Objects are OMF; programs are
+# linked by a Watcom-style linker (wlink or JWlink).
+[binaries]
+c = ['clang', '--target=i8086-pc-msdos', '-mcmodel=huge', '-msize-t=16', '-nostdlib']
+c_ld = '@DIRNAME@/i8086-msdos-ld'
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'msdos'
+cpu_family = 'i8086'
+cpu = 'i8086'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true
