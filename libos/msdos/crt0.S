@@ -49,6 +49,9 @@
  * DGROUP is laid out as CONST, the constructor and destructor tables
  * (XIB XI XIE YIB YI YIE), _DATA, _BSS, the communal variables and STACK.
  * The heap starts after STACK.
+ *
+ * In the far-data models, variables over the data threshold are far data in
+ * segments of classes FAR_DATA and FAR_BSS, between the code and DGROUP.
  */
 
 #ifndef __MSDOS_STACK_SIZE
@@ -133,6 +136,15 @@ ___fini_array_start:
 	.p2align 1
 	.globl	___fini_array_end
 ___fini_array_end:
+
+#ifndef __TINY__
+	/* Far data (variables over the data threshold in the far-data models)
+	 * is in segments of classes FAR_DATA and FAR_BSS. These empty ones
+	 * place those classes after the code and before DGROUP, so that the
+	 * heap after STACK does not run into them. */
+	.section .fardata,"aw",@progbits
+	.section .farbss,"aw",@nobits
+#endif
 
 	.bss
 ___bss_start:
