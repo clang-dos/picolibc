@@ -57,5 +57,7 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   times a second.
 - `fork`, `execve`, `pipe`, `waitpid` and `getentropy` fail with
   `ENOSYS` (`waitpid` with `ECHILD`); terminal attributes with `ENOTTY`.
-  `arc4random` therefore aborts.
+  Without `getentropy`, `arc4random` runs from a fixed all-zero seed, so
+  its output is predictable. A program can define `arc4random_abort` to
+  be called instead.
 - Signals, `raise` and `sysconf` come from `libos/fallback`.
