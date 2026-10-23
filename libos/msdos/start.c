@@ -69,12 +69,14 @@ static void
 init_heap(void)
 {
     __msdos_brk = __msdos_heap_start;
+    /* The offset in DGROUP where the heap ends. */
+    uint16_t end;
 #ifdef __TINY__
     /* The stack starts at the top of the segment, or of the memory DOS
      * gave the program if that is less than 64 KiB. */
     uint16_t sp;
     __asm__("movw %%sp, %0" : "=r"(sp));
-    __msdos_heap_end = (char *)(sp - COM_STACK);
+    end = sp - COM_STACK;
 #else
     /* The heap is the rest of DGROUP, up to 64 KiB or the end of the
      * program's memory, which is at PSP:2. */
@@ -82,10 +84,11 @@ init_heap(void)
     __asm__("movw %%ds, %0" : "=r"(ds));
     uint16_t top = peekw(__msdos_psp, 2);
     uint16_t paras = top > ds ? top - ds : 0;
-    __msdos_heap_end = paras >= 0x1000 ? (char *)0xfffe : (char *)(paras << 4);
+    end = paras >= 0x1000 ? 0xfffe : paras << 4;
 #endif
-    if (__msdos_heap_end < __msdos_heap_start)
-        __msdos_heap_end = __msdos_heap_start;
+    /* Pointer arithmetic keeps the segment of far data pointers. */
+    uint16_t start = __MSDOS_OFF(__msdos_heap_start);
+    __msdos_heap_end = __msdos_heap_start + (end > start ? end - start : 0);
 }
 
 /* Copy the environment block at PSP:2Ch. It holds NUL-terminated

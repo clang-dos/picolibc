@@ -35,9 +35,10 @@
 
 
 /*
- * Real-mode helpers for the DOS system calls: near data, arguments on the
- * stack, SI, DI and BP preserved. In the medium memory model the helpers
- * are far functions: a 4-byte return address and RETF.
+ * Real-mode helpers for the DOS system calls: arguments on the stack, SI,
+ * DI, BP and DS preserved. In the far-code models (medium, large, huge)
+ * they are far functions: a 4-byte return address and RETF. In the
+ * far-data models (compact, large, huge) pointer arguments are far.
  */
 
 #if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
@@ -47,38 +48,73 @@
 #define ARG(n)	(4 + (n))(%bp)
 #define RETURN	retw
 #endif
+#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
+#define FAR_DATA 1
+#define PTR	4	/* bytes of a pointer argument */
+#else
+#define PTR	2
+#endif
 
 	.text
 
-/* int __msdos_int21(struct __msdos_regs *r) */
+/* int __msdos_int21(struct __msdos_regs *r)
+ *
+ * struct __msdos_regs: ax 0, bx 2, cx 4, dx 6, si 8, di 10, ds 12, es 14.
+ * Locals: -6(%bp) the caller's DS, -10(%bp) r (offset, then segment). */
 	.globl	___msdos_int21
 ___msdos_int21:
 	pushw	%bp
 	movw	%sp, %bp
 	pushw	%si
 	pushw	%di
+	pushw	%ds
+#ifdef FAR_DATA
+	lesw	ARG(0), %bx
+#else
 	movw	ARG(0), %bx
-	pushw	%bx		/* r, at -6(%bp) */
-	movw	(%bx), %ax
-	movw	4(%bx), %cx
-	movw	6(%bx), %dx
-	movw	8(%bx), %si
-	movw	10(%bx), %di
-	movw	2(%bx), %bx
 	pushw	%ds
 	popw	%es
+#endif
+	pushw	%es		/* -8(%bp) */
+	pushw	%bx		/* -10(%bp) */
+	movw	%es:4(%bx), %cx
+	movw	%es:6(%bx), %dx
+	movw	%es:8(%bx), %si
+	movw	%es:10(%bx), %di
+	movw	%es:12(%bx), %ax	/* ds, or 0 for DGROUP */
+	testw	%ax, %ax
+	jnz	1f
+	movw	-6(%bp), %ax
+1:	pushw	%ax		/* -12(%bp) */
+	movw	%es:14(%bx), %ax	/* es, or 0 for DGROUP */
+	testw	%ax, %ax
+	jnz	1f
+	movw	-6(%bp), %ax
+1:	pushw	%ax		/* -14(%bp) */
+	movw	%es:(%bx), %ax
+	movw	%es:2(%bx), %bx
+	popw	%es
+	popw	%ds
 	int	$0x21
-	/* Keep the flags until the carry is read. */
-	xchgw	%bx, -6(%bp)	/* bx = r; the result bx is saved */
-	movw	%ax, (%bx)
-	movw	%cx, 4(%bx)
-	movw	%dx, 6(%bx)
-	movw	%si, 8(%bx)
-	movw	%di, 10(%bx)
+	/* Keep the flags until the carry is read: only MOV, PUSH, POP and
+	 * LES until SBB. */
+	movw	-6(%bp), %ds
+	pushw	%es		/* -12(%bp): the result ES */
+	pushw	%bx		/* -14(%bp): the result BX */
+	lesw	-10(%bp), %bx
+	movw	%ax, %es:(%bx)
+	movw	%cx, %es:4(%bx)
+	movw	%dx, %es:6(%bx)
+	movw	%si, %es:8(%bx)
+	movw	%di, %es:10(%bx)
 	popw	%ax
-	movw	%ax, 2(%bx)
+	movw	%ax, %es:2(%bx)
+	popw	%ax
+	movw	%ax, %es:14(%bx)
 	sbbw	%ax, %ax
 	negw	%ax
+	leaw	-6(%bp), %sp
+	popw	%ds
 	popw	%di
 	popw	%si
 	popw	%bp
@@ -92,12 +128,16 @@ ___msdos_fromfar:
 	pushw	%si
 	pushw	%di
 	pushw	%ds
+#ifdef FAR_DATA
+	lesw	ARG(0), %di
+#else
+	pushw	%ds
 	popw	%es
 	movw	ARG(0), %di
-	movw	ARG(4), %si
-	movw	ARG(6), %cx
-	pushw	%ds
-	movw	ARG(2), %ds
+#endif
+	movw	ARG(PTR + 2), %si
+	movw	ARG(PTR + 4), %cx
+	movw	ARG(PTR), %ds
 	cld
 	rep movsb
 	popw	%ds

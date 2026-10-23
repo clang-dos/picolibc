@@ -63,6 +63,12 @@ __malloc_sbrk_aligned(size_t s)
 
     if (d < 0)
         return (void *)-1;
+#if PTRDIFF_MAX < INTPTR_MAX
+    /* sbrk takes a ptrdiff_t, which can be narrower than intptr_t (the
+     * i8086 compact model). */
+    if (d > PTRDIFF_MAX)
+        return (void *)-1;
+#endif
 #endif
     p = sbrk(d);
 

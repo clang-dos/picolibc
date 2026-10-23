@@ -41,7 +41,8 @@ static ssize_t
 dos_read(int fd, void *buf, size_t count)
 {
     struct __msdos_regs r = { .ax = 0x3f00, .bx = (uint16_t)fd,
-                              .cx = (uint16_t)count, .dx = (uint16_t)buf };
+                              .cx = (uint16_t)count, .dx = __MSDOS_OFF(buf),
+                              .ds = __MSDOS_SEG(buf) };
     if (count > 0xfffe)
         r.cx = 0xfffe;
     if (__msdos_int21(&r))

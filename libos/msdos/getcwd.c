@@ -47,7 +47,9 @@ getcwd(char *buf, size_t size)
     path[0] = 'A' + (r.ax & 0xff);
     path[1] = ':';
     path[2] = '\\';
-    r = (struct __msdos_regs){ .ax = 0x4700, .dx = 0, .si = (uint16_t)(path + 3) };
+    r = (struct __msdos_regs){ .ax = 0x4700, .dx = 0,
+                               .si = __MSDOS_OFF(path + 3),
+                               .ds = __MSDOS_SEG(path + 3) };
     if (__msdos_int21(&r)) {
         __msdos_error(r.ax);
         return NULL;

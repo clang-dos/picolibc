@@ -41,7 +41,8 @@ static int
 dos_write(int fd, const char *p, size_t n, size_t *done)
 {
     struct __msdos_regs r = { .ax = 0x4000, .bx = (uint16_t)fd,
-                              .cx = (uint16_t)n, .dx = (uint16_t)p };
+                              .cx = (uint16_t)n, .dx = __MSDOS_OFF(p),
+                              .ds = __MSDOS_SEG(p) };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     *done = r.ax;

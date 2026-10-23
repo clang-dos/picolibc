@@ -34,15 +34,32 @@
  */
 
 /*
- * setjmp and longjmp for 16-bit real mode with near data. Arguments are on
- * the stack, the caller pops them, and SI, DI and BP are preserved across
- * calls. In the medium model they are far functions.
+ * setjmp and longjmp for 16-bit real mode. Arguments are on the stack, the
+ * caller pops them, and SI, DI and BP are preserved across calls. In the
+ * far-code models (medium, large, huge) they are far functions, and in the
+ * far-data models (compact, large, huge) env is a far pointer.
  *
  * jmp_buf: SI, DI, BP, SP after return, IP, and CS for far code.
  */
 
 #if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
 #define FAR_CODE 1
+#define RA	4	/* bytes of the return address */
+#else
+#define RA	2
+#endif
+#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
+#define FAR_DATA 1
+#define PTR	4
+#else
+#define PTR	2
+#endif
+
+/* ES:BX = env, which is at off(%bx). */
+#ifdef FAR_DATA
+#define LOAD_ENV(off)	lesw	off(%bx), %bx
+#else
+#define LOAD_ENV(off)	movw	off(%bx), %bx; pushw %ds; popw %es
 #endif
 
 	.text
@@ -53,15 +70,15 @@ _setjmp:
 	popw	%dx		/* return segment */
 #endif
 	movw	%sp, %bx
-	movw	(%bx), %bx	/* env */
-	movw	%si, (%bx)
-	movw	%di, 2(%bx)
-	movw	%bp, 4(%bx)
-	movw	%sp, 6(%bx)
-	movw	%cx, 8(%bx)
+	LOAD_ENV(0)
+	movw	%si, %es:(%bx)
+	movw	%di, %es:2(%bx)
+	movw	%bp, %es:4(%bx)
+	movw	%sp, %es:6(%bx)
+	movw	%cx, %es:8(%bx)
 	xorw	%ax, %ax
 #ifdef FAR_CODE
-	movw	%dx, 10(%bx)
+	movw	%dx, %es:10(%bx)
 	pushw	%dx
 	pushw	%cx
 	lretw
@@ -72,22 +89,17 @@ _setjmp:
 	.globl	_longjmp
 _longjmp:
 	movw	%sp, %bx
-#ifdef FAR_CODE
-	movw	6(%bx), %ax	/* val */
-	movw	4(%bx), %bx	/* env */
-#else
-	movw	4(%bx), %ax	/* val */
-	movw	2(%bx), %bx	/* env */
-#endif
+	movw	(RA + PTR)(%bx), %ax	/* val */
+	LOAD_ENV(RA)
 	testw	%ax, %ax
 	jnz	1f
 	incw	%ax		/* longjmp(env, 0) returns 1 */
-1:	movw	(%bx), %si
-	movw	2(%bx), %di
-	movw	4(%bx), %bp
-	movw	6(%bx), %sp
+1:	movw	%es:(%bx), %si
+	movw	%es:2(%bx), %di
+	movw	%es:4(%bx), %bp
+	movw	%es:6(%bx), %sp
 #ifdef FAR_CODE
-	ljmpw	*8(%bx)
+	ljmpw	*%es:8(%bx)
 #else
-	jmpw	*8(%bx)
+	jmpw	*%es:8(%bx)
 #endif

@@ -41,7 +41,8 @@
 static int
 dos_open(const char *path, int access)
 {
-    struct __msdos_regs r = { .ax = 0x3d00 | access, .dx = (uint16_t)path };
+    struct __msdos_regs r = { .ax = 0x3d00 | access, .dx = __MSDOS_OFF(path),
+                              .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return -(int)r.ax;
     return r.ax;
@@ -51,7 +52,8 @@ static int
 dos_create(const char *path, uint16_t fn, int readonly)
 {
     struct __msdos_regs r = { .ax = fn << 8, .cx = readonly ? 1 : 0,
-                              .dx = (uint16_t)path };
+                              .dx = __MSDOS_OFF(path),
+                              .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return -(int)r.ax;
     if (fn == 0x3c) {

@@ -41,7 +41,8 @@
 int
 unlink(const char *path)
 {
-    struct __msdos_regs r = { .ax = 0x4100, .dx = (uint16_t)path };
+    struct __msdos_regs r = { .ax = 0x4100, .dx = __MSDOS_OFF(path),
+                              .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     return 0;

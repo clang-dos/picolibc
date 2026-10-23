@@ -61,10 +61,13 @@ int
 stat(const char * restrict path, struct stat * restrict st)
 {
     static struct dta dta;
-    struct __msdos_regs r = { .ax = 0x1a00, .dx = (uint16_t)&dta };
+    struct __msdos_regs r = { .ax = 0x1a00, .dx = __MSDOS_OFF(&dta),
+                              .ds = __MSDOS_SEG(&dta) };
     __msdos_int21(&r);
     /* Find files, including hidden, system and directory entries. */
-    r = (struct __msdos_regs){ .ax = 0x4e00, .cx = 0x16, .dx = (uint16_t)path };
+    r = (struct __msdos_regs){ .ax = 0x4e00, .cx = 0x16,
+                               .dx = __MSDOS_OFF(path),
+                               .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r)) {
         /* The root directory of a drive has no entry. */
         size_t n = strlen(path);

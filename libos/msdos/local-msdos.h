@@ -43,16 +43,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* Registers for a DOS call (INT 21h). DS and ES are the data segment. */
+/* Registers for a DOS call (INT 21h). A ds or es of 0 means the data
+ * segment (DGROUP). On return es holds the ES that DOS returned. */
 struct __msdos_regs {
-    uint16_t ax, bx, cx, dx, si, di;
+    uint16_t ax, bx, cx, dx, si, di, ds, es;
 };
+
+/* The offset and segment of a pointer to pass to DOS. With near data
+ * pointers the segment is DGROUP, given as 0. */
+#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
+#define __MSDOS_SEG(p) ((uint16_t)((uint32_t)(const void *)(p) >> 16))
+#else
+#define __MSDOS_SEG(p) ((uint16_t)0)
+#endif
+#define __MSDOS_OFF(p) ((uint16_t)(uintptr_t)(const void *)(p))
 
 /* Call INT 21h with *r and store the result registers back. Returns the
  * carry flag: nonzero when DOS reports an error, whose code is then in ax. */
 int __msdos_int21(struct __msdos_regs *r);
 
-/* Copy n bytes from seg:off to dst in the data segment. */
+/* Copy n bytes from seg:off to dst. */
 void __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n);
 
 /* Segment of the program segment prefix. */
