@@ -112,9 +112,11 @@ extern int64_t __msdos_start_centi;
 #include <time.h>
 time_t __msdos_mktime(const struct tm *tm);
 
-/* Heap bounds. crt0 defines __heap_start after the stack; startup sets the
- * end from the memory DOS gave the program. */
+/* Heap bounds. crt0 defines __heap_start after the stack, or after the
+ * program with far data pointers; startup sets the heap's base from it, and
+ * its end from the memory DOS gave the program. */
 extern char __msdos_heap_start[] __asm__("___heap_start");
+extern char *__msdos_heap_base;
 extern char *__msdos_brk;
 extern char *__msdos_heap_end;
 

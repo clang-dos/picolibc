@@ -28,11 +28,15 @@ then links them, with `libclang_rt.builtins.a`, by default.
 ## What the startup code does
 
 `crt0.S` sets DS, ES and SS to DGROUP (an .EXE starts with SS at its
-STACK segment), clears BSS and calls `__msdos_start` in `start.c`, which:
+STACK segment), clears BSS (and with far data pointers the far BSS after
+the stack) and calls `__msdos_start` in `start.c`, which:
 
-- sets up the heap. In an .EXE it is the rest of DGROUP after the stack,
-  up to 64 KiB or the end of the program's memory. In a .COM it ends
-  2 KiB below the stack, which DOS puts at the top of the segment.
+- sets up the heap. In a small or medium model .EXE it is the rest of
+  DGROUP after the stack, up to 64 KiB or the end of the program's memory.
+  In compact and large it is a segment of its own after the program (after
+  far BSS), up to 64 KiB; in huge it runs from there to the end of the
+  program's memory. In a .COM it ends 2 KiB below the stack, which DOS
+  puts at the top of the segment.
 - splits the command tail at PSP:80h into `argv`. Double quotes group
   words, and `\"` is a quote, as in the Microsoft C runtime.
 - copies the environment block into `environ` and takes `argv[0]` from

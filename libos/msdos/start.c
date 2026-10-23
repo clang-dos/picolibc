@@ -68,7 +68,7 @@ peekw(uint16_t seg, uint16_t off)
 static void
 init_heap(void)
 {
-    __msdos_brk = __msdos_heap_start;
+    __msdos_heap_base = __msdos_brk = __msdos_heap_start;
 #ifdef __HUGE__
     /* Huge pointers reach all of the program's memory: the heap runs to
      * its end, the paragraph at PSP:2. A huge pointer as an integer is its
@@ -76,6 +76,15 @@ init_heap(void)
     __msdos_heap_end = (char *)((uint32_t)peekw(__msdos_psp, 2) << 4);
     if (__msdos_heap_end < __msdos_heap_start)
         __msdos_heap_end = __msdos_heap_start;
+#elif defined(__COMPACT__) || defined(__LARGE__)
+    /* The heap is a segment of its own after the program, up to 64 KiB or
+     * the end of the program's memory, which is at PSP:2. */
+    uint16_t para = __MSDOS_SEG(__msdos_heap_start) +
+                    ((__MSDOS_OFF(__msdos_heap_start) + 15u) >> 4);
+    uint16_t top = peekw(__msdos_psp, 2);
+    uint16_t paras = top > para ? top - para : 0;
+    __msdos_heap_base = __msdos_brk = (char *)((uint32_t)para << 16);
+    __msdos_heap_end = __msdos_brk + (paras >= 0x1000 ? 0xfffe : paras << 4);
 #else
     /* The offset in DGROUP where the heap ends. */
     uint16_t end;

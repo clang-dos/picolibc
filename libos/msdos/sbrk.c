@@ -37,6 +37,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
+char *__msdos_heap_base;
 char *__msdos_brk;
 char *__msdos_heap_end;
 
@@ -53,7 +54,7 @@ void *
 sbrk(ptrdiff_t incr)
 {
     char *old = __msdos_brk;
-    if (incr < 0 ? (room_t)-incr > (room_t)(old - __msdos_heap_start)
+    if (incr < 0 ? (room_t)-incr > (room_t)(old - __msdos_heap_base)
                  : (room_t)incr > (room_t)(__msdos_heap_end - old)) {
         errno = ENOMEM;
         return (void *)-1;

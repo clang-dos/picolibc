@@ -50,8 +50,11 @@
  * (XIB XI XIE YIB YI YIE), _DATA, _BSS, the communal variables and STACK.
  * The heap starts after STACK.
  *
- * In the far-data models, variables over the data threshold are far data in
- * segments of classes FAR_DATA and FAR_BSS, between the code and DGROUP.
+ * Far variables are in segments of classes FAR_DATA and FAR_BSS. FAR_DATA
+ * is between the code and DGROUP. In the models with far data pointers,
+ * FAR_BSS comes after STACK, so that it takes no room in the .EXE file, and
+ * FAR_END ends the program; the heap starts after it. In the others FAR_BSS
+ * is before DGROUP, whose end the heap uses.
  */
 
 #ifndef __MSDOS_STACK_SIZE
@@ -60,6 +63,9 @@
 
 #if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
 #define FAR_CODE 1
+#endif
+#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
+#define FAR_DATA 1
 #endif
 
 	.text
@@ -101,6 +107,34 @@ _start:
 	subw	%di, %cx
 	xorw	%ax, %ax
 	rep stosb
+#ifdef FAR_DATA
+	/* Clear far BSS, from ___farbss_start to the paragraph after
+	 * ___far_end, 32 KiB at a time. */
+	movw	$___farbss_start@SEG, %dx
+	movw	$___far_end, %si
+	addw	$15, %si
+	movb	$4, %cl
+	shrw	%cl, %si
+	addw	$___far_end@SEG, %si
+	subw	%dx, %si		/* paragraphs to clear */
+1:	testw	%si, %si
+	jz	3f
+	movw	%si, %cx
+	cmpw	$0x800, %cx
+	jbe	2f
+	movw	$0x800, %cx
+2:	subw	%cx, %si
+	movw	%dx, %es
+	addw	%cx, %dx
+	shlw	%cx
+	shlw	%cx
+	shlw	%cx			/* words */
+	xorw	%di, %di
+	rep stosw
+	jmp	1b
+3:	movw	%ds, %dx
+	movw	%dx, %es
+#endif
 	movw	%bx, ___msdos_psp
 	xorw	%bp, %bp
 #ifdef FAR_CODE
@@ -138,12 +172,18 @@ ___fini_array_start:
 ___fini_array_end:
 
 #ifndef __TINY__
-	/* Far data (variables over the data threshold in the far-data models)
-	 * is in segments of classes FAR_DATA and FAR_BSS. These empty ones
-	 * place those classes after the code and before DGROUP, so that the
-	 * heap after STACK does not run into them. */
+	/* These empty segments place the far data classes: see above. */
 	.section .fardata,"aw",@progbits
 	.section .farbss,"aw",@nobits
+#ifdef FAR_DATA
+	.p2align 4
+	.globl	___farbss_start
+___farbss_start:
+	.section .farend,"aw",@nobits
+	.globl	___far_end, ___heap_start
+___far_end:
+___heap_start:
+#endif
 #endif
 
 	.bss
@@ -157,5 +197,7 @@ ___bss_end:
 	 * segment. */
 	.zero	__MSDOS_STACK_SIZE
 #endif
+#ifndef FAR_DATA
 	.globl	___heap_start
 ___heap_start:
+#endif
