@@ -50,4 +50,8 @@ endif
 
 subdir('fallback')
 
+if get_option('os-msdos')
+  subdir('msdos')
+endif
+
 subdir('dummyhost')

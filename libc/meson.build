@@ -73,6 +73,9 @@ if not has_os_library
   src_cpart += src_os_fallback
 endif
 
+# The DOS layer is part of libc itself.
+src_cpart += get_variable('src_os_msdos', [])
+
 subdir('include')
 
 foreach params : targets
