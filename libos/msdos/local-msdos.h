@@ -50,13 +50,23 @@ struct __msdos_regs {
 };
 
 /* The offset and segment of a pointer to pass to DOS. With near data
- * pointers the segment is DGROUP, given as 0. */
-#if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
+ * pointers the segment is DGROUP, given as 0. A far pointer as an integer
+ * is segment:offset; a huge pointer as an integer is its linear address,
+ * given to DOS normalized (offset 0 to 15). */
+#if defined(__HUGE__)
+#define __MSDOS_SEG(p) ((uint16_t)((uint32_t)(const void *)(p) >> 4))
+#define __MSDOS_OFF(p) ((uint16_t)((uint32_t)(const void *)(p) & 15))
+#elif defined(__COMPACT__) || defined(__LARGE__)
 #define __MSDOS_SEG(p) ((uint16_t)((uint32_t)(const void *)(p) >> 16))
+#define __MSDOS_OFF(p) ((uint16_t)(uint32_t)(const void *)(p))
 #else
 #define __MSDOS_SEG(p) ((uint16_t)0)
-#endif
 #define __MSDOS_OFF(p) ((uint16_t)(uintptr_t)(const void *)(p))
+#endif
+
+/* The most bytes one DOS read or write moves: a normalized huge pointer's
+ * offset leaves this much room in its segment. */
+#define __MSDOS_MAX_IO 0xfff0
 
 /* Call INT 21h with *r and store the result registers back. Returns the
  * carry flag: nonzero when DOS reports an error, whose code is then in ax. */

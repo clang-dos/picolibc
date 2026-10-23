@@ -69,6 +69,14 @@ static void
 init_heap(void)
 {
     __msdos_brk = __msdos_heap_start;
+#ifdef __HUGE__
+    /* Huge pointers reach all of the program's memory: the heap runs to
+     * its end, the paragraph at PSP:2. A huge pointer as an integer is its
+     * linear address. */
+    __msdos_heap_end = (char *)((uint32_t)peekw(__msdos_psp, 2) << 4);
+    if (__msdos_heap_end < __msdos_heap_start)
+        __msdos_heap_end = __msdos_heap_start;
+#else
     /* The offset in DGROUP where the heap ends. */
     uint16_t end;
 #ifdef __TINY__
@@ -89,6 +97,7 @@ init_heap(void)
     /* Pointer arithmetic keeps the segment of far data pointers. */
     uint16_t start = __MSDOS_OFF(__msdos_heap_start);
     __msdos_heap_end = __msdos_heap_start + (end > start ? end - start : 0);
+#endif
 }
 
 /* Copy the environment block at PSP:2Ch. It holds NUL-terminated
