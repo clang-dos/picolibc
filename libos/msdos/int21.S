@@ -35,10 +35,18 @@
 
 
 /*
- * Real-mode helpers for the DOS system calls, for the tiny and small memory
- * models: near code and data, arguments on the stack, SI, DI and BP
- * preserved.
+ * Real-mode helpers for the DOS system calls: near data, arguments on the
+ * stack, SI, DI and BP preserved. In the medium memory model the helpers
+ * are far functions: a 4-byte return address and RETF.
  */
+
+#if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
+#define ARG(n)	(6 + (n))(%bp)
+#define RETURN	lretw
+#else
+#define ARG(n)	(4 + (n))(%bp)
+#define RETURN	retw
+#endif
 
 	.text
 
@@ -49,7 +57,7 @@ ___msdos_int21:
 	movw	%sp, %bp
 	pushw	%si
 	pushw	%di
-	movw	4(%bp), %bx
+	movw	ARG(0), %bx
 	pushw	%bx		/* r, at -6(%bp) */
 	movw	(%bx), %ax
 	movw	4(%bx), %cx
@@ -74,7 +82,7 @@ ___msdos_int21:
 	popw	%di
 	popw	%si
 	popw	%bp
-	ret
+	RETURN
 
 /* void __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n) */
 	.globl	___msdos_fromfar
@@ -85,15 +93,15 @@ ___msdos_fromfar:
 	pushw	%di
 	pushw	%ds
 	popw	%es
-	movw	4(%bp), %di
-	movw	8(%bp), %si
-	movw	10(%bp), %cx
+	movw	ARG(0), %di
+	movw	ARG(4), %si
+	movw	ARG(6), %cx
 	pushw	%ds
-	movw	6(%bp), %ds
+	movw	ARG(2), %ds
 	cld
 	rep movsb
 	popw	%ds
 	popw	%di
 	popw	%si
 	popw	%bp
-	ret
+	RETURN

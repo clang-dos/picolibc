@@ -34,17 +34,24 @@
  */
 
 /*
- * setjmp and longjmp for 16-bit real mode with near code and data (the
- * tiny and small memory models). Arguments are on the stack, the caller
- * pops them, and SI, DI and BP are preserved across calls.
+ * setjmp and longjmp for 16-bit real mode with near data. Arguments are on
+ * the stack, the caller pops them, and SI, DI and BP are preserved across
+ * calls. In the medium model they are far functions.
  *
- * jmp_buf: SI, DI, BP, SP after return, IP.
+ * jmp_buf: SI, DI, BP, SP after return, IP, and CS for far code.
  */
+
+#if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
+#define FAR_CODE 1
+#endif
 
 	.text
 	.globl	_setjmp
 _setjmp:
 	popw	%cx		/* return address */
+#ifdef FAR_CODE
+	popw	%dx		/* return segment */
+#endif
 	movw	%sp, %bx
 	movw	(%bx), %bx	/* env */
 	movw	%si, (%bx)
@@ -53,13 +60,25 @@ _setjmp:
 	movw	%sp, 6(%bx)
 	movw	%cx, 8(%bx)
 	xorw	%ax, %ax
+#ifdef FAR_CODE
+	movw	%dx, 10(%bx)
+	pushw	%dx
+	pushw	%cx
+	lretw
+#else
 	jmpw	*%cx
+#endif
 
 	.globl	_longjmp
 _longjmp:
 	movw	%sp, %bx
+#ifdef FAR_CODE
+	movw	6(%bx), %ax	/* val */
+	movw	4(%bx), %bx	/* env */
+#else
 	movw	4(%bx), %ax	/* val */
 	movw	2(%bx), %bx	/* env */
+#endif
 	testw	%ax, %ax
 	jnz	1f
 	incw	%ax		/* longjmp(env, 0) returns 1 */
@@ -67,4 +86,8 @@ _longjmp:
 	movw	2(%bx), %di
 	movw	4(%bx), %bp
 	movw	6(%bx), %sp
+#ifdef FAR_CODE
+	ljmpw	*8(%bx)
+#else
 	jmpw	*8(%bx)
+#endif

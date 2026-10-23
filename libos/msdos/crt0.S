@@ -39,9 +39,12 @@
  *
  * .COM (tiny model): DOS loads the program after the 256-byte PSP, with
  *   CS = DS = ES = SS = the PSP segment and SP at the top of the segment.
- * .EXE (small model): DS = ES = the PSP segment, and SS:SP is the end of
+ * .EXE (other models): DS = ES = the PSP segment, and SS:SP is the end of
  *   the STACK segment. C code needs SS = DS = DGROUP, so SS:SP is moved
  *   onto DGROUP, whose segment comes from a base16 fixup.
+ *
+ * In the medium model code is far: each module has its own code segment
+ * and C functions are called with CALL FAR.
  *
  * DGROUP is laid out as CONST, the constructor and destructor tables
  * (XIB XI XIE YIB YI YIE), _DATA, _BSS, the communal variables and STACK.
@@ -52,10 +55,21 @@
 #define __MSDOS_STACK_SIZE 4096
 #endif
 
+#if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
+#define FAR_CODE 1
+#endif
+
 	.text
+#ifdef FAR_CODE
+	/* Undefined weak symbols resolve here. Far pointers to them are
+	 * 0000:0000, a null pointer. */
+	.globl	__omf_weak_null
+	.set	__omf_weak_null, 0
+#else
 	/* Undefined weak symbols resolve here, at offset 0, as in ELF. */
 	.globl	__omf_weak_null
 __omf_weak_null:
+#endif
 #ifdef __TINY__
 	.org	0x100
 #endif
@@ -86,7 +100,11 @@ _start:
 	rep stosb
 	movw	%bx, ___msdos_psp
 	xorw	%bp, %bp
+#ifdef FAR_CODE
+	lcallw	$___msdos_start@SEG, $___msdos_start
+#else
 	call	___msdos_start
+#endif
 	/* Not reached: __msdos_start calls exit. */
 	movw	$0x4cff, %ax
 	int	$0x21
