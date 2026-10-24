@@ -115,4 +115,8 @@ void         hfree(void __huge *) __picolibc_export;
 
 _END_STD_C
 
+#ifdef __I86__
+#include <sys/_i86malloc.h>
+#endif
+
 #endif /* _INCLUDE_MALLOC_H_ */

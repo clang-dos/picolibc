@@ -262,7 +262,108 @@ size_t  strerrorlen_s(errno_t) __picolibc_export;
 
 #include <sys/string.h>
 
+#ifdef __I86__
+/* The far functions of DOS compilers, in every model. */
+#include <sys/_i86mem.h>
+void __far *_fmemccpy(void __far *, const void __far *, int, size_t) __picolibc_export;
+void __far *_fmemchr(const void __far *, int, size_t) __picolibc_export;
+int         _fmemcmp(const void __far *, const void __far *, size_t) __picolibc_export;
+void __far *_fmemcpy(void __far *, const void __far *, size_t) __picolibc_export;
+int         _fmemicmp(const void __far *, const void __far *, size_t) __picolibc_export;
+void __far *_fmemmove(void __far *, const void __far *, size_t) __picolibc_export;
+void __far *_fmemset(void __far *, int, size_t) __picolibc_export;
+char __far *_fstrcat(char __far *, const char __far *) __picolibc_export;
+char __far *_fstrchr(const char __far *, int) __picolibc_export;
+int         _fstrcmp(const char __far *, const char __far *) __picolibc_export;
+char __far *_fstrcpy(char __far *, const char __far *) __picolibc_export;
+size_t      _fstrcspn(const char __far *, const char __far *) __picolibc_export;
+char __far *_fstrdup(const char __far *) __picolibc_export;
+int         _fstricmp(const char __far *, const char __far *) __picolibc_export;
+size_t      _fstrlen(const char __far *) __picolibc_export;
+char __far *_fstrlwr(char __far *) __picolibc_export;
+char __far *_fstrncat(char __far *, const char __far *, size_t) __picolibc_export;
+int         _fstrncmp(const char __far *, const char __far *, size_t) __picolibc_export;
+char __far *_fstrncpy(char __far *, const char __far *, size_t) __picolibc_export;
+int         _fstrnicmp(const char __far *, const char __far *, size_t) __picolibc_export;
+char __far *_fstrnset(char __far *, int, size_t) __picolibc_export;
+char __far *_fstrpbrk(const char __far *, const char __far *) __picolibc_export;
+char __far *_fstrrchr(const char __far *, int) __picolibc_export;
+char __far *_fstrrev(char __far *) __picolibc_export;
+char __far *_fstrset(char __far *, int) __picolibc_export;
+size_t      _fstrspn(const char __far *, const char __far *) __picolibc_export;
+char __far *_fstrstr(const char __far *, const char __far *) __picolibc_export;
+char __far *_fstrtok(char __far *, const char __far *) __picolibc_export;
+char __far *_fstrupr(char __far *) __picolibc_export;
+
+#if defined(__I86_NEAR_DATA__) && defined(__I86_OVERLOAD)
+/* With near data, the standard functions on far pointers call the far
+   ones. */
+#if __MISC_VISIBLE || __POSIX_VISIBLE || __ISO_C_VISIBLE >= 2023
+__I86_OVERLOAD(void __far *, memccpy, _fmemccpy,
+               (void __far *__d, const void __far *__s, int __c, size_t __n),
+               (__d, __s, __c, __n), __I86_ANY)
+#endif
+__I86_OVERLOAD(void __far *, memchr, _fmemchr,
+               (const void __far *__s, int __c, size_t __n), (__s, __c, __n),
+               __I86_ANY)
+__I86_OVERLOAD(int, memcmp, _fmemcmp,
+               (const void __far *__a, const void __far *__b, size_t __n),
+               (__a, __b, __n), __I86_ANY)
+__I86_OVERLOAD(void __far *, memcpy, _fmemcpy,
+               (void __far *__d, const void __far *__s, size_t __n),
+               (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(void __far *, memmove, _fmemmove,
+               (void __far *__d, const void __far *__s, size_t __n),
+               (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(void __far *, memset, _fmemset,
+               (void __far *__d, int __c, size_t __n), (__d, __c, __n),
+               __I86_ANY)
+__I86_OVERLOAD(char __far *, strcat, _fstrcat,
+               (char __far *__d, const char __far *__s), (__d, __s), __I86_ANY)
+__I86_OVERLOAD(char __far *, strchr, _fstrchr,
+               (const char __far *__s, int __c), (__s, __c), __I86_ANY)
+__I86_OVERLOAD(int, strcmp, _fstrcmp,
+               (const char __far *__a, const char __far *__b), (__a, __b),
+               __I86_ANY)
+__I86_OVERLOAD(char __far *, strcpy, _fstrcpy,
+               (char __far *__d, const char __far *__s), (__d, __s), __I86_ANY)
+__I86_OVERLOAD(size_t, strcspn, _fstrcspn,
+               (const char __far *__s, const char __far *__r), (__s, __r),
+               __I86_ANY)
+#if __MISC_VISIBLE || __POSIX_VISIBLE >= 200809 || __XSI_VISIBLE >= 4 || __ISO_C_VISIBLE >= 2023
+__I86_OVERLOAD(char __far *, strdup, _fstrdup, (const char __far *__s), (__s),
+               __I86_ANY)
+#endif
+__I86_OVERLOAD(size_t, strlen, _fstrlen, (const char __far *__s), (__s),
+               __I86_ANY)
+__I86_OVERLOAD(char __far *, strncat, _fstrncat,
+               (char __far *__d, const char __far *__s, size_t __n),
+               (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(int, strncmp, _fstrncmp,
+               (const char __far *__a, const char __far *__b, size_t __n),
+               (__a, __b, __n), __I86_ANY)
+__I86_OVERLOAD(char __far *, strncpy, _fstrncpy,
+               (char __far *__d, const char __far *__s, size_t __n),
+               (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(char __far *, strpbrk, _fstrpbrk,
+               (const char __far *__s, const char __far *__r), (__s, __r),
+               __I86_ANY)
+__I86_OVERLOAD(char __far *, strrchr, _fstrrchr,
+               (const char __far *__s, int __c), (__s, __c), __I86_ANY)
+__I86_OVERLOAD(size_t, strspn, _fstrspn,
+               (const char __far *__s, const char __far *__r), (__s, __r),
+               __I86_ANY)
+__I86_OVERLOAD(char __far *, strstr, _fstrstr,
+               (const char __far *__s, const char __far *__r), (__s, __r),
+               __I86_ANY)
+#endif
+#endif
+
 _END_STD_C
+
+#ifdef __I86__
+#include <sys/_i86malloc.h>
+#endif
 
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/string.h>

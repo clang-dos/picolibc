@@ -98,6 +98,14 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   first `halloc` shrinks the program's block with function 4Ah: to the end
   of the heap, or in the huge models by the size of the block, lowering
   the end of the heap.
+- `dosmem.c` gets memory from DOS for `halloc` and the far heap; the
+  tiny model gives up all but its 64 KiB segment. `farstring.c` has the
+  far string functions (`_fmemcpy`, `_fstrlen` and the rest), `farheap.c`
+  the far heap (`_fmalloc`: arenas of `arena.h` in segments from DOS or
+  `GlobalAlloc` with near data, `malloc` with far data), and
+  `nearheap.c` the near heap (`_nmalloc`: `malloc` with near data, the
+  Windows local heap, or an arena in `__msdos_near_heap` in DGROUP,
+  `nearheapsize.c`).
 
 ## 16-bit Windows
 

@@ -446,6 +446,10 @@ void ignore_handler_s(const char * __restrict msg, void * __restrict ptr, __errn
 
 _END_STD_C
 
+#ifdef __I86__
+#include <sys/_i86malloc.h>
+#endif
+
 #if __SSP_FORTIFY_LEVEL > 0
 #include <ssp/stdlib.h>
 #endif

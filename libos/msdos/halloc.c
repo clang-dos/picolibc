@@ -39,90 +39,13 @@
  * DOS model but tiny. They come straight from DOS (INT 21h functions 48h
  * and 49h), outside the heap of malloc.
  *
- * DOS gives an .EXE program all of its memory, so the first halloc that
- * finds no free DOS memory shrinks the program's memory block: down to the
- * end of the heap in the models where the heap has a fixed size, or by the
- * size of the block in the huge models, whose heap can use the rest of
- * memory and then ends below it. Blocks are allocated last fit, at the top
- * of memory, away from the program.
+ * The memory comes from __msdos_alloc_paras (dosmem.c).
  */
 
 #if !defined(__WINDOWS__) && !defined(__TINY__)
 
 #include "local-msdos.h"
 #include <malloc.h>
-
-/* The paragraph after the program's memory block; 0 until known. */
-static uint16_t mem_top;
-
-/* The linear address of a data pointer. */
-static uint32_t
-linear(const char *p)
-{
-#if defined(__HUGE__)
-    return (uint32_t)p;
-#elif defined(__COMPACT__) || defined(__LARGE__)
-    return ((uint32_t)__MSDOS_SEG(p) << 4) + __MSDOS_OFF(p);
-#else
-    uint16_t ds;
-    __asm__("movw %%ds, %0" : "=r"(ds));
-    return ((uint32_t)ds << 4) + __MSDOS_OFF(p);
-#endif
-}
-
-/* DOS function 48h, with the last fit strategy. Returns the segment, or 0. */
-static uint16_t
-dos_alloc(uint16_t paras)
-{
-    struct __msdos_regs r = { .ax = 0x5800 };
-    __msdos_int21(&r);
-    uint16_t old = r.ax;
-    r = (struct __msdos_regs){ .ax = 0x5801, .bx = 2 };
-    __msdos_int21(&r);
-    r = (struct __msdos_regs){ .ax = 0x4800, .bx = paras };
-    uint16_t seg = __msdos_int21(&r) ? 0 : r.ax;
-    r = (struct __msdos_regs){ .ax = 0x5801, .bx = old };
-    __msdos_int21(&r);
-    return seg;
-}
-
-/* Gives memory at the end of the program's block back to DOS, keeping
- * what the heap uses, so that \p paras paragraphs may become free. */
-static int
-shrink_program(uint16_t paras)
-{
-    if (!mem_top) {
-        uint16_t top;
-        __msdos_fromfar(&top, __msdos_psp, 2, 2);
-        mem_top = top;
-    }
-#ifdef __HUGE__
-    /* The heap may grow up to its end: keep what it already has. */
-    uint32_t used = linear(__msdos_brk);
-#else
-    uint32_t used = linear(__msdos_heap_end);
-#endif
-    uint16_t low = (uint16_t)((used + 15) >> 4);
-    if (mem_top <= low)
-        return 0;
-    uint16_t top = low;
-#ifdef __HUGE__
-    /* The block and the paragraph of its DOS memory control block. */
-    if (mem_top - low > paras + 1u)
-        top = mem_top - paras - 1;
-#endif
-    struct __msdos_regs r = { .ax = 0x4a00, .bx = top - __msdos_psp,
-                              .es = __msdos_psp };
-    if (__msdos_int21(&r))
-        return 0;
-    mem_top = top;
-#ifdef __HUGE__
-    char *end = (char *)((uint32_t)top << 4);
-    if (__msdos_heap_end > end)
-        __msdos_heap_end = end;
-#endif
-    return 1;
-}
 
 void __huge *
 halloc(long n, size_t size)
@@ -133,9 +56,7 @@ halloc(long n, size_t size)
     }
     uint32_t bytes = (uint32_t)n * size;
     uint16_t paras = (uint16_t)((bytes + 15) >> 4);
-    uint16_t seg = dos_alloc(paras);
-    if (!seg && shrink_program(paras))
-        seg = dos_alloc(paras);
+    uint16_t seg = __msdos_alloc_paras(paras);
     if (!seg) {
         errno = ENOMEM;
         return NULL;

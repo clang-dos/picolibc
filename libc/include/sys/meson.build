@@ -35,6 +35,8 @@
 inc_sys_headers_all = [
   'auxv.h',
   'cdefs.h',
+  '_i86malloc.h',
+  '_i86mem.h',
   'config.h',
   'custom_file.h',
   '_default_fcntl.h',

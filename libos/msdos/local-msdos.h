@@ -75,6 +75,9 @@ int __msdos_int21(struct __msdos_regs *r);
 /* Copy n bytes from seg:off to dst. */
 void __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n);
 
+/* DOS memory of paras paragraphs, from dosmem.c: its segment, or 0. */
+uint16_t __msdos_alloc_paras(uint16_t paras);
+
 /* Segment of the program segment prefix. */
 extern uint16_t __msdos_psp;
 /* The stack top that crt0 found, in the small and medium models. */
@@ -136,6 +139,10 @@ extern char __win16_cmdline[128];
 
 #define __WIN16_API __far __pascal
 uint16_t __WIN16_API LocalAlloc(uint16_t flags, uint16_t bytes);
+uint16_t __WIN16_API LocalFree(uint16_t handle);
+uint16_t __WIN16_API LocalReAlloc(uint16_t handle, uint16_t bytes,
+                                  uint16_t flags);
+uint16_t __WIN16_API LocalSize(uint16_t handle);
 uint16_t __WIN16_API GlobalAlloc(uint16_t flags, uint32_t bytes);
 void __far *__WIN16_API GlobalLock(uint16_t handle);
 int __WIN16_API GetModuleFileName(uint16_t module, char __far *name, int size);
