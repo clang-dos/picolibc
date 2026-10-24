@@ -83,3 +83,29 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   its output is predictable. A program can define `arc4random_abort` to
   be called instead.
 - Signals, `raise` and `sysconf` come from `libos/fallback`.
+
+## 16-bit Windows
+
+The same code builds for `i8086-pc-win16` (the cross files
+`scripts/cross-clang-i8086-win16-<model>.txt`, for small, medium, compact
+and large), where `__WINDOWS__` is defined. Windows programs call DOS for
+files and the clock, so the system calls above work unchanged; the
+startup code and the heap differ:
+
+- `crt0.S` calls `InitTask`, which sets up the program (DS is DGROUP and
+  SS is DS), clears BSS, saves the instance handles and `nCmdShow`, calls
+  `WaitEvent` and `InitApp` and goes on to `__msdos_start` as on DOS. The
+  first 16 bytes of DGROUP are left free for Windows. There is no stack of
+  the program's own; the linker's `option stack` sets its size.
+- The heap (`win16.c`) is one `GlobalAlloc` block of up to 64 KiB in the
+  compact and large models, or a `LocalAlloc` block in DGROUP in small and
+  medium.
+- `argv[0]` comes from `GetModuleFileName`. The command line is the PSP
+  tail, as on DOS.
+- `winmain.c` has a `main` that calls `WinMain(hInstance, hPrevInstance,
+  lpCmdLine, nCmdShow)`, for programs without a `main` of their own.
+- `libentry.S` is a DLL's startup code (`libentry.obj`): it sets up the
+  local heap with `LocalInit`, clears BSS and calls `__win16_libstart`,
+  which runs the constructors and calls `LibMain` (a default one returning
+  1 is in `libmain.c`). `WEP` (`wep.c`) runs the destructors.
+- `_exit` is INT 21h function 4Ch, which Windows handles for programs.

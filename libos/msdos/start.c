@@ -65,6 +65,9 @@ peekw(uint16_t seg, uint16_t off)
     return w;
 }
 
+#ifdef __WINDOWS__
+#define init_heap __win16_init_heap
+#else
 static void
 init_heap(void)
 {
@@ -108,6 +111,7 @@ init_heap(void)
     __msdos_heap_end = __msdos_heap_start + (end > start ? end - start : 0);
 #endif
 }
+#endif /* !__WINDOWS__ */
 
 /* Copy the environment block at PSP:2Ch. It holds NUL-terminated
  * NAME=value strings and an empty string, then (DOS 3 and later) a word
@@ -205,9 +209,26 @@ __msdos_start(void)
     __msdos_time(&s, &c);
     __msdos_start_centi = s * 100 + c;
     init_heap();
+#ifdef __WINDOWS__
+    /* WinMain gets the command line as it is. */
+    uint8_t len = peek(__msdos_psp, 0x80);
+    if (len > 126)
+        len = 126;
+    __msdos_fromfar(__win16_cmdline, __msdos_psp, 0x81, len);
+    __win16_cmdline[len] = '\0';
+    for (char *p = __win16_cmdline; *p; p++)
+        if (*p == '\r')
+            *p = '\0';
+#endif
     /* Read the command line before anything changes the DTA at PSP:80h. */
     int argc = init_args(argv, NULL);
     char *argv0 = init_environ();
+#ifdef __WINDOWS__
+    /* The environment block need not end with the program's path. */
+    static char path[128];
+    if (GetModuleFileName(__win16_hinstance, path, sizeof(path)) > 0)
+        argv0 = path;
+#endif
     if (argv0)
         argv[0] = argv0;
     else
@@ -217,3 +238,4 @@ __msdos_start(void)
 #endif
     exit(main(argc, argv, environ));
 }
+

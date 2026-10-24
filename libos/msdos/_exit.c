@@ -41,7 +41,7 @@ _exit(int status)
 {
     struct __msdos_regs r;
     for (;;) {
-        r.ax = 0x4c00 | (status & 0xff);
+        r = (struct __msdos_regs){ .ax = 0x4c00 | (status & 0xff) };
         __msdos_int21(&r);
     }
 }

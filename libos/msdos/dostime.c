@@ -54,11 +54,12 @@ __msdos_time(int64_t *sec, uint16_t *centi)
 {
     struct __msdos_regs d1, t, d2;
     do {
-        d1.ax = 0x2a00;
+        /* Unused registers are zero: DS and ES of 0 are DGROUP. */
+        d1 = (struct __msdos_regs){ .ax = 0x2a00 };
         __msdos_int21(&d1);
-        t.ax = 0x2c00;
+        t = (struct __msdos_regs){ .ax = 0x2c00 };
         __msdos_int21(&t);
-        d2.ax = 0x2a00;
+        d2 = (struct __msdos_regs){ .ax = 0x2a00 };
         __msdos_int21(&d2);
         /* Read again if the date changed at midnight. */
     } while (d1.cx != d2.cx || d1.dx != d2.dx);

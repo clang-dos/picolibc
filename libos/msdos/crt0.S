@@ -35,7 +35,7 @@
 
 
 /*
- * Startup code for DOS programs, linked first.
+ * Startup code for DOS and 16-bit Windows programs, linked first.
  *
  * .COM (tiny model): DOS loads the program after the 256-byte PSP, with
  *   CS = DS = ES = SS = the PSP segment and SP at the top of the segment.
@@ -58,7 +58,12 @@
  */
 
 #ifndef __MSDOS_STACK_SIZE
+#ifdef __WINDOWS__
+/* Windows allocates the stack from the linker's stack= option. */
+#define __MSDOS_STACK_SIZE 0
+#else
 #define __MSDOS_STACK_SIZE 4096
+#endif
 #endif
 
 #if defined(__MEDIUM__) || defined(__LARGE__) || defined(__HUGE__)
@@ -66,6 +71,13 @@
 #endif
 #if defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__)
 #define FAR_DATA 1
+#endif
+
+#ifdef __WINDOWS__
+	/* The first 16 bytes of DGROUP belong to Windows: InitTask keeps the
+	 * stack bounds and the local heap's address there. */
+	.section .rodata
+	.zero	16
 #endif
 
 	.text
@@ -84,6 +96,50 @@ __omf_weak_null:
 #endif
 	.globl	_start
 _start:
+#ifdef __WINDOWS__
+	/* Windows starts the task with DS = SS = DGROUP and SP at the top of
+	 * the stack (option stack=). InitTask sets up the stack bounds and the
+	 * local heap in DGROUP's first 16 bytes and returns AX = 0 on failure,
+	 * CX = the stack size, DI = hInstance, SI = hPrevInstance, ES = the
+	 * PSP, ES:BX = the command line and DX = the nCmdShow argument. */
+	xorw	%bp, %bp
+	pushw	%bp
+	lcallw	$INITTASK@SEG, $INITTASK
+	testw	%ax, %ax
+	jz	9f
+	/* Clear _BSS and the communal variables, then keep the results. */
+	movw	%es, %bx
+	pushw	%di
+	pushw	%ds
+	popw	%es
+	cld
+	movw	$___bss_start, %di
+	movw	$___bss_end, %cx
+	subw	%di, %cx
+	xorw	%ax, %ax
+	rep stosb
+	popw	%di
+	movw	%bx, ___msdos_psp
+	movw	%di, ___win16_hinstance
+	movw	%si, ___win16_hprevinstance
+	movw	%dx, ___win16_cmdshow
+	/* Clear the event that started the task, and set up its queue. */
+	xorw	%ax, %ax
+	pushw	%ax
+	lcallw	$WAITEVENT@SEG, $WAITEVENT
+	pushw	___win16_hinstance
+	lcallw	$INITAPP@SEG, $INITAPP
+	testw	%ax, %ax
+	jz	9f
+	xorw	%bp, %bp
+#ifdef FAR_CODE
+	lcallw	$___msdos_start@SEG, $___msdos_start
+#else
+	call	___msdos_start
+#endif
+9:	movw	$0x4cff, %ax
+	int	$0x21
+#else /* !__WINDOWS__ */
 #ifdef __TINY__
 	movw	%cs, %bx		/* PSP */
 #else
@@ -145,6 +201,7 @@ _start:
 	/* Not reached: __msdos_start calls exit. */
 	movw	$0x4cff, %ax
 	int	$0x21
+#endif /* !__WINDOWS__ */
 
 	/* Bounds of the constructor and destructor tables, for picolibc's
 	 * __libc_init_array and __libc_fini_array. There is no separate
@@ -192,7 +249,7 @@ ___bss_start:
 	.section .stack,"aw",@nobits
 	.p2align 1
 ___bss_end:
-#ifndef __TINY__
+#if !defined(__TINY__) && __MSDOS_STACK_SIZE > 0
 	/* The stack of a .EXE program. A .COM program uses the top of its
 	 * segment. */
 	.zero	__MSDOS_STACK_SIZE

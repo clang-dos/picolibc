@@ -80,6 +80,10 @@ srcs_os_msdos = [
   'times.c',
   'unlink.c',
   'waitpid.c',
+  'wep.c',
+  'win16.c',
+  'winmain.c',
+  'libmain.c',
   'write.c',
 ]
 
@@ -118,4 +122,16 @@ foreach params : targets
                 install : really_install,
                 install_dir : instdir,
                 build_by_default : true)
+
+  # The startup code of 16-bit Windows DLLs.
+  if cc.get_define('__WINDOWS__', args : target_c_args + c_args) != ''
+    custom_target('libentry' + target,
+                  input : 'libentry.S',
+                  output : 'libentry.obj',
+                  command : cc.cmd_array() + target_c_args + c_args +
+                            ['-c', '@INPUT@', '-o', '@OUTPUT@'],
+                  install : really_install,
+                  install_dir : instdir,
+                  build_by_default : true)
+  endif
 endforeach

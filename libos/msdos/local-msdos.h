@@ -122,4 +122,28 @@ extern char *__msdos_heap_end;
 
 void __msdos_start(void);
 
+#ifdef __WINDOWS__
+/* 16-bit Windows: the task's handles from InitTask, and the KERNEL
+ * functions the C library uses. INT 21h works for files and the clock as
+ * in DOS; memory comes from Windows. */
+extern uint16_t __win16_hinstance;
+extern uint16_t __win16_hprevinstance;
+extern uint16_t __win16_cmdshow;
+/* The command line (the PSP's command tail, NUL-terminated) for WinMain. */
+extern char __win16_cmdline[128];
+
+#define __WIN16_API __far __pascal
+uint16_t __WIN16_API LocalAlloc(uint16_t flags, uint16_t bytes);
+uint16_t __WIN16_API GlobalAlloc(uint16_t flags, uint32_t bytes);
+void __far *__WIN16_API GlobalLock(uint16_t handle);
+int __WIN16_API GetModuleFileName(uint16_t module, char __far *name, int size);
+
+/* A DLL's local heap size and command line, from libentry.obj. */
+extern uint16_t __win16_heapsize;
+extern char __far *__win16_libcmdline;
+int __win16_libstart(void);
+/* Take the heap from Windows. */
+void __win16_init_heap(void);
+#endif
+
 #endif /* _LOCAL_MSDOS_H_ */
