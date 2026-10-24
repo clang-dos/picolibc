@@ -94,6 +94,14 @@ srcs_os_msdos = [
   'dllframe.c',
   'dllframesize.c',
   'write.c',
+  'chmod.c',
+  'dirent.c',
+  'link.c',
+  'lstat.c',
+  'realpath.c',
+  'statvfs.c',
+  'truncate.c',
+  'utime.c',
 ]
 
 # Signals and sysconf come from the fallback library.

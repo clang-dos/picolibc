@@ -83,6 +83,19 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   at its start, which truncates it on emulators (emu2) that don't empty
   an existing file on INT 21h function 3Ch.
 - `O_APPEND` seeks to the end before each write.
+- `opendir`, `readdir`, `rewinddir` and `closedir` use find first and
+  find next (INT 21h functions 4Eh and 4Fh), with hidden and system
+  entries; `dirfd` and `fdopendir` fail. `stat` also finds directories
+  named with a trailing `\`, `.` or `..` and the root of a drive, through
+  the canonical name (function 60h), which is also `realpath`. `lstat`
+  is `stat`.
+- `chmod` sets or clears the read-only attribute from the owner write
+  bit (function 43h); `fchmod` fails with `ENOSYS`. `truncate` and
+  `ftruncate` write 0 bytes at the new size. `utime`, `utimes`,
+  `utimensat` and `futimens` set a file's date and time (function 5701h),
+  to 2 seconds. `statvfs` and `fstatvfs` report the drive's clusters
+  (function 36h). `link` and `symlink` fail with `ENOSYS`, and `readlink`
+  with `EINVAL`.
 - The DOS clock is local time; it is treated as UTC. It ticks about 18
   times a second.
 - `fork`, `execve`, `pipe`, `waitpid` and `getentropy` fail with
