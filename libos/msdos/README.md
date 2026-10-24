@@ -83,6 +83,13 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   its output is predictable. A program can define `arc4random_abort` to
   be called instead.
 - Signals, `raise` and `sysconf` come from `libos/fallback`.
+- `halloc(n, size)` and `hfree` (`halloc.c`, declared in `<malloc.h>`
+  for every model but tiny) allocate zeroed blocks of up to 1 MiB with
+  INT 21h function 48h, last fit, and free them with function 49h. DOS
+  gives an .EXE all of its memory, so when no free memory is left the
+  first `halloc` shrinks the program's block with function 4Ah: to the end
+  of the heap, or in the huge models by the size of the block, lowering
+  the end of the heap.
 
 ## 16-bit Windows
 

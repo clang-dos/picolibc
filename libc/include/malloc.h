@@ -104,6 +104,15 @@ void            __malloc_unlock(void) __picolibc_export;
 /* Some systems provide this, so do too for compatibility.  */
 void cfree(void *) __picolibc_export;
 
+#if defined(__MSDOS__) && defined(__I86__) && !defined(__TINY__)
+/* DOS compilers' blocks of memory larger than 64 KiB: n elements of size
+   bytes, zeroed, reached through a huge pointer and freed with hfree. */
+void __huge *halloc(long, size_t) __picolibc_export;
+void         hfree(void __huge *) __picolibc_export;
+#define _halloc halloc
+#define _hfree  hfree
+#endif
+
 _END_STD_C
 
 #endif /* _INCLUDE_MALLOC_H_ */

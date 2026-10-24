@@ -58,6 +58,7 @@ srcs_os_msdos = [
   'getpid.c',
   'gettimeofday.c',
   'getuid.c',
+  'halloc.c',
   'int21.S',
   'isatty.c',
   'isdevice.c',
