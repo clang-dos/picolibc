@@ -107,6 +107,31 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   Windows local heap, or an arena in `__msdos_near_heap` in DGROUP,
   `nearheapsize.c`).
 
+## Interrupt handlers and resident programs
+
+`<dos.h>` and `<i86.h>` (in `libc/machine/i8086`) have what Open Watcom
+and Microsoft C have for interrupt handlers and TSRs, for DOS programs:
+
+- `_dos_getvect(n)` and `_dos_setvect(n, handler)` (`dosvect.c`) read and
+  set interrupt vector `n` with INT 21h functions 35h and 25h. Handlers
+  are `void (__interrupt __far *)()`.
+- `_dos_keep(status, paras)` (`dosvect.c`) ends the program and keeps
+  `paras` paragraphs of it, from the PSP, resident (INT 21h function 31h).
+  With 0 it keeps the program up to the end of its heap (the break of
+  `sbrk`), which covers the code, the data and anything allocated so far;
+  the stack of a .COM, at the top of its segment, is given back, since
+  interrupt handlers run on the stack of the program they interrupt. Other
+  DOS blocks (`halloc`, the far heap) stay allocated. `atexit` functions
+  and destructors do not run.
+- `_chain_intr(handler)` (`chainintr.S`), from an `__interrupt` function,
+  restores the registers it saved, with any changes made to them, and
+  jumps to `handler` as if the interrupt had gone there. It finds the
+  saved registers at the interrupt function's BP.
+- `union INTPACK` (`<i86.h>`) is the layout of the saved registers that an
+  `__interrupt` function can take as its parameter. `_disable()` and
+  `_enable()` are CLI and STI; `MK_FP`, `FP_SEG` and `FP_OFF` make and
+  split far pointers. `_psp` is the PSP segment.
+
 ## 16-bit Windows
 
 The same code builds for `i8086-pc-win16` (the cross files
