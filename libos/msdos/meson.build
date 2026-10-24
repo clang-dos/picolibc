@@ -85,6 +85,8 @@ srcs_os_msdos = [
   'win16.c',
   'winmain.c',
   'libmain.c',
+  'dllframe.c',
+  'dllframesize.c',
   'write.c',
 ]
 
