@@ -73,9 +73,16 @@
 #define FAR_DATA 1
 #endif
 
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
 	/* The first 16 bytes of DGROUP belong to Windows: InitTask keeps the
 	 * stack bounds and the local heap's address there. */
+	.section .rodata
+	.zero	16
+#elif !defined(__TINY__)
+	/* No variable or string may be at offset 0 of DGROUP, where a near
+	 * pointer to it would be a null pointer. As in other DOS compilers,
+	 * DGROUP starts with 16 bytes that nothing uses. (In the tiny model
+	 * the PSP is at offset 0.) */
 	.section .rodata
 	.zero	16
 #endif
@@ -163,6 +170,11 @@ _start:
 	subw	%di, %cx
 	xorw	%ax, %ax
 	rep stosb
+#if !defined(__TINY__) && !defined(FAR_DATA)
+	/* The top of the stack, where the heap starts if the linker's option
+	 * stack made the stack larger than the one here. */
+	movw	%sp, ___msdos_stack_top
+#endif
 #ifdef FAR_DATA
 	/* Clear far BSS, from ___farbss_start to the paragraph after
 	 * ___far_end, 32 KiB at a time. */

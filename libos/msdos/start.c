@@ -39,6 +39,9 @@
 #include <sys/_initfini.h>
 
 uint16_t __msdos_psp;
+#if !defined(__TINY__) && !defined(__WINDOWS__)
+uint16_t __msdos_stack_top;
+#endif
 int64_t __msdos_start_centi;
 char **environ;
 
@@ -108,7 +111,17 @@ init_heap(void)
 #endif
     /* Pointer arithmetic keeps the segment of far data pointers. */
     uint16_t start = __MSDOS_OFF(__msdos_heap_start);
+#ifndef __TINY__
+    /* With the linker's option stack, the stack can end after
+     * __msdos_heap_start; the heap starts after the stack. */
+    if (__msdos_stack_top > start) {
+        start = __msdos_stack_top;
+        __msdos_heap_base = __msdos_brk = (char *)start;
+    }
+    __msdos_heap_end = __msdos_brk + (end > start ? end - start : 0);
+#else
     __msdos_heap_end = __msdos_heap_start + (end > start ? end - start : 0);
+#endif
 #endif
 }
 #endif /* !__WINDOWS__ */

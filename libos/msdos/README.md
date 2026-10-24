@@ -45,7 +45,15 @@ the stack) and calls `__msdos_start` in `start.c`, which:
   `exit` runs `atexit` handlers and destructors (the YI segment).
 
 The stack of an .EXE is 4 KiB; build with
-`-D__MSDOS_STACK_SIZE=<bytes>` in `c_args` to change it.
+`-D__MSDOS_STACK_SIZE=<bytes>` in `c_args` to change it, or link a
+program with the linker's `option stack=<bytes>`, which makes the STACK
+segment larger. In the small and medium models crt0 records the top of the
+stack in `__msdos_stack_top`, and the heap starts there when that is after
+`__heap_start`.
+
+In every model but tiny, DGROUP starts with 16 bytes that nothing uses
+(in Windows, the bytes that Windows keeps), so that no variable or string
+is at offset 0, where a near pointer to it would be null.
 
 ## System calls
 

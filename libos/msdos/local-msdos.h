@@ -77,6 +77,8 @@ void __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n);
 
 /* Segment of the program segment prefix. */
 extern uint16_t __msdos_psp;
+/* The stack top that crt0 found, in the small and medium models. */
+extern uint16_t __msdos_stack_top;
 
 /* Set errno from a DOS error code and return -1. */
 int __msdos_error(uint16_t code);
