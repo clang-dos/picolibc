@@ -117,7 +117,17 @@ srcs_os_msdos_fallback = [
 
 srcs_libos += srcs_os_msdos + srcs_os_msdos_fallback
 
-src_os_msdos = files(srcs_os_msdos)
+# printf and scanf entry points with the integer and long long variants,
+# which the compiler calls when a format string needs no more.
+srcs_os_msdos_iovariant = []
+foreach func : ['printf', 'fprintf', 'sprintf', 'snprintf', 'asprintf',
+                'scanf', 'fscanf', 'sscanf']
+  foreach variant : ['i', 'l']
+    srcs_os_msdos_iovariant += 'iovariant' / func + variant + '.c'
+  endforeach
+endforeach
+
+src_os_msdos = files(srcs_os_msdos + srcs_os_msdos_iovariant)
 foreach f : srcs_os_msdos_fallback
   src_os_msdos += files('..' / 'fallback' / f)
 endforeach
