@@ -77,12 +77,14 @@ typedef struct __file __FILE;
 #define ___FILE_DECLARED
 #endif
 
-#if __POSIX_VISIBLE >= 200809 || _XSI_VISIBLE
-
+/* FILE, which the wide stream functions take, is declared in every mode, as
+ * in glibc: libc++'s <cwchar> takes it from here. */
 #ifndef _FILE_DECLARED
 typedef __FILE FILE;
 #define _FILE_DECLARED
 #endif
+
+#if __POSIX_VISIBLE >= 200809 || _XSI_VISIBLE
 
 #ifndef _WCTYPE_DECLARED
 typedef __wctype_t wctype_t;

@@ -345,13 +345,16 @@ unsigned long long strtoull(const char * __restrict __n, char ** __restrict __en
     __picolibc_export;
 #endif
 
-#if __GNU_VISIBLE
+#if __GNU_VISIBLE || (defined(__cplusplus) && __POSIX_VISIBLE >= 200809)
+/* libc++'s headers call these. */
 double strtod_l(const char * __restrict, char ** __restrict, locale_t) __picolibc_export;
 float  strtof_l(const char  *__restrict, char  **__restrict, locale_t) __picolibc_export;
 #ifdef __HAVE_LONG_DOUBLE
 extern long double strtold_l(const char * __restrict, char ** __restrict, locale_t)
     __picolibc_export;
 #endif /* __HAVE_LONG_DOUBLE */
+#endif
+#if __GNU_VISIBLE
 long strtol_l(const char * __restrict, char ** __restrict, int, locale_t) __picolibc_export;
 unsigned long strtoul_l(const char * __restrict, char ** __restrict, int, locale_t __loc)
     __picolibc_export;
