@@ -34,9 +34,27 @@
  */
 
 #include "local-stdio.h"
+#ifdef __I86__
+#include <errno.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 int
 remove(const char *pathname)
 {
+#ifdef __I86__
+    /* DOS deletes only files, so a directory is removed with rmdir, as
+     * POSIX says. */
+    int ret = unlink(pathname);
+    if (ret < 0 && errno == EACCES) {
+        struct stat st;
+        if (stat(pathname, &st) == 0 && S_ISDIR(st.st_mode))
+            return rmdir(pathname);
+        errno = EACCES;
+    }
+    return ret;
+#else
     return unlink(pathname);
+#endif
 }

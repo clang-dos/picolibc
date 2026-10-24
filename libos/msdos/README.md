@@ -88,7 +88,8 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   entries; `dirfd` and `fdopendir` fail. `stat` also finds directories
   named with a trailing `\`, `.` or `..` and the root of a drive, through
   the canonical name (function 60h), which is also `realpath`. `lstat`
-  is `stat`.
+  is `stat`. `remove` deletes a file, or an empty directory with
+  `rmdir`.
 - `chmod` sets or clears the read-only attribute from the owner write
   bit (function 43h); `fchmod` fails with `ENOSYS`. `truncate` and
   `ftruncate` write 0 bytes at the new size. `utime`, `utimes`,
