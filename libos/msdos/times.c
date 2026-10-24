@@ -37,6 +37,19 @@
 #include <sys/times.h>
 #include <time.h>
 
+int64_t __msdos_start_centi;
+
+/* The start time, read only by programs that call times() or clock(), so
+ * that the others do not link the date and time code. */
+static void __attribute__((constructor))
+__msdos_init_clock(void)
+{
+    int64_t s;
+    uint16_t c;
+    __msdos_time(&s, &c);
+    __msdos_start_centi = s * 100 + c;
+}
+
 /* Process time is the time since the program started, in units of
  * CLOCKS_PER_SEC, which is also what clock() returns. */
 clock_t
