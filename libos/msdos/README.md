@@ -85,11 +85,19 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
 - `O_APPEND` seeks to the end before each write.
 - The DOS clock is local time; it is treated as UTC. It ticks about 18
   times a second.
-- `fork`, `execve`, `pipe`, `waitpid` and `getentropy` fail with
-  `ENOSYS` (`waitpid` with `ECHILD`); terminal attributes with `ENOTTY`.
-  Without `getentropy`, `arc4random` runs from a fixed all-zero seed, so
-  its output is predictable. A program can define `arc4random_abort` to
-  be called instead.
+- `fork`, `execve`, `pipe` and `waitpid` fail with `ENOSYS` (`waitpid`
+  with `ECHILD`); terminal attributes with `ENOTTY`.
+- `getentropy` (`getentropy.c`), which seeds `arc4random`, mixes timing
+  noise into a sponge built on the ChaCha permutation: the DOS date and
+  time, the BIOS tick count, the PSP and the stack pointer (on Windows,
+  the tick count, task and instance instead of the BIOS ticks and the
+  PSP), then a few hundred readings of timer channel 0 (1.19 MHz), each
+  after a delay loop that depends on the last reading. On a CPU with a
+  time stamp counter (CPUID says so) each reading also takes RDTSC. With
+  RDTSC, or in an emulator whose timer follows the host clock, the seed
+  is hard to guess; on an 8088 PC,
+  whose CPU and timer share one crystal, mostly gives the moment the
+  program started, which an attacker who knows it well can guess.
 - Signals, `raise` and `sysconf` come from `libos/fallback`.
 - `halloc(n, size)` and `hfree` (`halloc.c`, declared in `<malloc.h>`
   for every model but tiny) allocate zeroed blocks of up to 1 MiB with
