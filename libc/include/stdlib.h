@@ -53,7 +53,7 @@ SUCH DAMAGE.
 
 #define __STDC_VERSION_STDLIB_H__ 202311L
 
-#if __GNU_VISIBLE
+#if __GNU_VISIBLE || (defined(__cplusplus) && __POSIX_VISIBLE >= 200809)
 #include <sys/_locale.h>
 #endif
 
