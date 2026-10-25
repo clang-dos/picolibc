@@ -48,6 +48,8 @@ struct utimbuf {
     time_t modtime;
 };
 
+int utime(const char *__path, const struct utimbuf *__times);
+
 _END_STD_C
 
 #endif /* _SYS_UTIME_H */

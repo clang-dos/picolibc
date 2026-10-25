@@ -83,13 +83,35 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   at its start, which truncates it on emulators (emu2) that don't empty
   an existing file on INT 21h function 3Ch.
 - `O_APPEND` seeks to the end before each write.
+- `opendir`, `readdir`, `rewinddir` and `closedir` use find first and
+  find next (INT 21h functions 4Eh and 4Fh), with hidden and system
+  entries; `dirfd` and `fdopendir` fail. `stat` also finds directories
+  named with a trailing `\`, `.` or `..` and the root of a drive, through
+  the canonical name (function 60h), which is also `realpath`. `lstat`
+  is `stat`. `remove` deletes a file, or an empty directory with
+  `rmdir`.
+- `chmod` sets or clears the read-only attribute from the owner write
+  bit (function 43h); `fchmod` fails with `ENOSYS`. `truncate` and
+  `ftruncate` write 0 bytes at the new size. `utime`, `utimes`,
+  `utimensat` and `futimens` set a file's date and time (function 5701h),
+  to 2 seconds. `statvfs` and `fstatvfs` report the drive's clusters
+  (function 36h). `link` and `symlink` fail with `ENOSYS`, and `readlink`
+  with `EINVAL`.
 - The DOS clock is local time; it is treated as UTC. It ticks about 18
   times a second.
-- `fork`, `execve`, `pipe`, `waitpid` and `getentropy` fail with
-  `ENOSYS` (`waitpid` with `ECHILD`); terminal attributes with `ENOTTY`.
-  Without `getentropy`, `arc4random` runs from a fixed all-zero seed, so
-  its output is predictable. A program can define `arc4random_abort` to
-  be called instead.
+- `fork`, `execve`, `pipe` and `waitpid` fail with `ENOSYS` (`waitpid`
+  with `ECHILD`); terminal attributes with `ENOTTY`.
+- `getentropy` (`getentropy.c`), which seeds `arc4random`, mixes timing
+  noise into a sponge built on the ChaCha permutation: the DOS date and
+  time, the BIOS tick count, the PSP and the stack pointer (on Windows,
+  the tick count, task and instance instead of the BIOS ticks and the
+  PSP), then a few hundred readings of timer channel 0 (1.19 MHz), each
+  after a delay loop that depends on the last reading. On a CPU with a
+  time stamp counter (CPUID says so) each reading also takes RDTSC. With
+  RDTSC, or in an emulator whose timer follows the host clock, the seed
+  is hard to guess; on an 8088 PC,
+  whose CPU and timer share one crystal, mostly gives the moment the
+  program started, which an attacker who knows it well can guess.
 - Signals, `raise` and `sysconf` come from `libos/fallback`.
 - `halloc(n, size)` and `hfree` (`halloc.c`, declared in `<malloc.h>`
   for every model but tiny) allocate zeroed blocks of up to 1 MiB with
@@ -106,6 +128,31 @@ use INT 21h. DOS error codes become `errno` values in `error.c`.
   `nearheap.c` the near heap (`_nmalloc`: `malloc` with near data, the
   Windows local heap, or an arena in `__msdos_near_heap` in DGROUP,
   `nearheapsize.c`).
+
+## Interrupt handlers and resident programs
+
+`<dos.h>` and `<i86.h>` (in `libc/machine/i8086`) have what Open Watcom
+and Microsoft C have for interrupt handlers and TSRs, for DOS programs:
+
+- `_dos_getvect(n)` and `_dos_setvect(n, handler)` (`dosvect.c`) read and
+  set interrupt vector `n` with INT 21h functions 35h and 25h. Handlers
+  are `void (__interrupt __far *)()`.
+- `_dos_keep(status, paras)` (`dosvect.c`) ends the program and keeps
+  `paras` paragraphs of it, from the PSP, resident (INT 21h function 31h).
+  With 0 it keeps the program up to the end of its heap (the break of
+  `sbrk`), which covers the code, the data and anything allocated so far;
+  the stack of a .COM, at the top of its segment, is given back, since
+  interrupt handlers run on the stack of the program they interrupt. Other
+  DOS blocks (`halloc`, the far heap) stay allocated. `atexit` functions
+  and destructors do not run.
+- `_chain_intr(handler)` (`chainintr.S`), from an `__interrupt` function,
+  restores the registers it saved, with any changes made to them, and
+  jumps to `handler` as if the interrupt had gone there. It finds the
+  saved registers at the interrupt function's BP.
+- `union INTPACK` (`<i86.h>`) is the layout of the saved registers that an
+  `__interrupt` function can take as its parameter. `_disable()` and
+  `_enable()` are CLI and STI; `MK_FP`, `FP_SEG` and `FP_OFF` make and
+  split far pointers. `_psp` is the PSP segment.
 
 ## 16-bit Windows
 

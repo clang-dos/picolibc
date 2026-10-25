@@ -57,28 +57,60 @@ dos_time(uint16_t date, uint16_t time)
     return __msdos_mktime(&tm);
 }
 
+static int
+find(const char *path)
+{
+    /* Find files, including hidden, system and directory entries. */
+    struct __msdos_regs r = { .ax = 0x4e00, .cx = 0x16,
+                              .dx = __MSDOS_OFF(path),
+                              .ds = __MSDOS_SEG(path) };
+    return __msdos_int21(&r) ? r.ax : 0;
+}
+
+/* "X:\", "X:/", "\" or "/", which have no directory entry of their own. */
+static int
+is_root(const char *p)
+{
+    if (p[0] && p[1] == ':')
+        p += 2;
+    return (p[0] == '\\' || p[0] == '/') && p[1] == '\0';
+}
+
 int
 stat(const char * restrict path, struct stat * restrict st)
 {
     static struct dta dta;
+    /* Static, not on the stack, which is not DGROUP in a DLL. */
+    static char full[128];
     struct __msdos_regs r = { .ax = 0x1a00, .dx = __MSDOS_OFF(&dta),
                               .ds = __MSDOS_SEG(&dta) };
     __msdos_int21(&r);
-    /* Find files, including hidden, system and directory entries. */
-    r = (struct __msdos_regs){ .ax = 0x4e00, .cx = 0x16,
-                               .dx = __MSDOS_OFF(path),
-                               .ds = __MSDOS_SEG(path) };
-    if (__msdos_int21(&r)) {
-        /* The root directory of a drive has no entry. */
-        size_t n = strlen(path);
-        if ((n == 3 && path[1] == ':' && (path[2] == '\\' || path[2] == '/'))
-            || (n == 1 && (path[0] == '\\' || path[0] == '/'))) {
+    int err = find(path);
+    if (err) {
+        int root = is_root(path);
+        /* "dir\", ".", ".." and "dir\.." have no entry of that name
+         * either: look for the canonical name (INT 21h function 60h). */
+        r = (struct __msdos_regs){ .ax = 0x6000, .si = __MSDOS_OFF(path),
+                                   .ds = __MSDOS_SEG(path),
+                                   .di = __MSDOS_OFF(full),
+                                   .es = __MSDOS_SEG(full) };
+        if (!root && path[0] && !__msdos_int21(&r)) {
+            size_t n = strlen(full);
+            if (n > 3 && full[n - 1] == '\\')
+                full[--n] = '\0';
+            if (is_root(full))
+                root = 1;
+            else if (!find(full))
+                err = 0;
+        }
+        if (root) {
             memset(st, 0, sizeof(*st));
             st->st_mode = S_IFDIR | 0777;
             st->st_nlink = 1;
             return 0;
         }
-        return __msdos_error(r.ax);
+        if (err)
+            return __msdos_error(err);
     }
     memset(st, 0, sizeof(*st));
     st->st_mode = (dta.attr & 0x10) ? S_IFDIR | 0777 : S_IFREG | 0666;

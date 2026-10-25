@@ -42,7 +42,6 @@ uint16_t __msdos_psp;
 #if !defined(__TINY__) && !defined(__WINDOWS__)
 uint16_t __msdos_stack_top;
 #endif
-int64_t __msdos_start_centi;
 char **environ;
 
 extern int main(int, char **, char **);
@@ -216,11 +215,7 @@ void
 __msdos_start(void)
 {
     static char *argv[MAX_ARGS + 1];
-    int64_t s;
-    uint16_t c;
 
-    __msdos_time(&s, &c);
-    __msdos_start_centi = s * 100 + c;
     init_heap();
 #ifdef __WINDOWS__
     /* WinMain gets the command line as it is. */

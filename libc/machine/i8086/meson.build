@@ -52,5 +52,5 @@ endforeach
 subdir('sys')
 
 if really_install
-  install_headers(['io.h'], install_dir: include_dir)
+  install_headers(['dos.h', 'i86.h', 'io.h'], install_dir: include_dir)
 endif

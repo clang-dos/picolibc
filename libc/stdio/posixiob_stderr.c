@@ -41,8 +41,10 @@
 
 static char                write_buf[__PICOLIBC_STDERR_BUFSIZ];
 
+/* A write-only stream never reads (freopen sets read() again), so it does
+ * not link read() and its text mode handling. */
 static struct __file_bufio __stderr
-    = FDEV_SETUP_POSIX(2, write_buf, __PICOLIBC_STDERR_BUFSIZ, __SWR, __BLBF);
+    = FDEV_SETUP_BUFIO(2, write_buf, __PICOLIBC_STDERR_BUFSIZ, NULL, write, lseek, close, __SWR, __BLBF);
 
 FILE * const __posix_stderr = &__stderr.xfile.cfile.file;
 

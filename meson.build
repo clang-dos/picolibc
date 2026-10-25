@@ -265,6 +265,14 @@ endif
 # is defined
 c_args += cc.get_supported_arguments(['-ffunction-sections'])
 
+# On i8086 the linker drops what nothing uses one section at a time, and
+# data shared by unrelated code is common: the day and month names that
+# nl_langinfo and strftime use, for example, would otherwise stay with the
+# locale functions in every C++ program.
+if host_machine.cpu_family() == 'i8086'
+  c_args += ['-fdata-sections']
+endif
+
 sanitize_flag = get_option('sanitize')
 if sanitize_flag == 'none'
   sanitize_flag = ''

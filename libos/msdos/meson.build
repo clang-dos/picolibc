@@ -69,6 +69,8 @@ srcs_os_msdos = [
   'msize.c',
   'dosmktime.c',
   'dosmem.c',
+  'dosvect.c',
+  'chainintr.S',
   'nanosleep.c',
   'nearheap.c',
   'nearheapsize.c',
@@ -94,6 +96,14 @@ srcs_os_msdos = [
   'dllframe.c',
   'dllframesize.c',
   'write.c',
+  'chmod.c',
+  'dirent.c',
+  'link.c',
+  'lstat.c',
+  'realpath.c',
+  'statvfs.c',
+  'truncate.c',
+  'utime.c',
 ]
 
 # Signals and sysconf come from the fallback library.
@@ -109,7 +119,17 @@ srcs_os_msdos_fallback = [
 
 srcs_libos += srcs_os_msdos + srcs_os_msdos_fallback
 
-src_os_msdos = files(srcs_os_msdos)
+# printf and scanf entry points with the integer and long long variants,
+# which the compiler calls when a format string needs no more.
+srcs_os_msdos_iovariant = []
+foreach func : ['printf', 'fprintf', 'sprintf', 'snprintf', 'asprintf',
+                'scanf', 'fscanf', 'sscanf']
+  foreach variant : ['i', 'l']
+    srcs_os_msdos_iovariant += 'iovariant' / func + variant + '.c'
+  endforeach
+endforeach
+
+src_os_msdos = files(srcs_os_msdos + srcs_os_msdos_iovariant)
 foreach f : srcs_os_msdos_fallback
   src_os_msdos += files('..' / 'fallback' / f)
 endforeach
