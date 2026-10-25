@@ -69,6 +69,8 @@ srcs_os_msdos = [
   'msize.c',
   'dosmktime.c',
   'dosmem.c',
+  'dosvect.c',
+  'chainintr.S',
   'nanosleep.c',
   'nearheap.c',
   'nearheapsize.c',
