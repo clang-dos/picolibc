@@ -35,7 +35,9 @@
 
 
 /* <dos.h> of the DOS compilers: interrupt vectors and resident programs
- * (TSRs), as in Open Watcom and Microsoft C. */
+ * (TSRs), as in Open Watcom and Microsoft C, and the timing, sound, port
+ * and memory functions of Turbo C. int86 and the registers are in
+ * <i86.h>, which this includes. */
 
 #ifndef _DOS_H_
 #define _DOS_H_
@@ -68,6 +70,54 @@ __attribute__((__noreturn__)) void _dos_keep(unsigned __retcode,
  * had gone to __handler, which returns to the interrupted program. */
 __attribute__((__noreturn__)) void
 _chain_intr(void (__interrupt __far *__handler)());
+
+/* Turbo C's names for the vector functions. */
+#define getvect _dos_getvect
+#define setvect _dos_setvect
+#define disable _disable
+#define enable _enable
+
+/* Wait __ms milliseconds, timed by the 8253 timer. */
+void delay(unsigned __ms);
+/* Sound the PC speaker at __hz hertz, until nosound(). */
+void sound(unsigned __hz);
+void nosound(void);
+
+/* I/O ports, as in Turbo C. */
+static __inline__ unsigned char
+inportb(unsigned __port)
+{
+    unsigned char __v;
+    __asm__ __volatile__("inb %w1, %b0" : "=a"(__v) : "Nd"((unsigned short)__port));
+    return __v;
+}
+
+static __inline__ unsigned
+inport(unsigned __port)
+{
+    unsigned short __v;
+    __asm__ __volatile__("inw %w1, %w0" : "=a"(__v) : "Nd"((unsigned short)__port));
+    return __v;
+}
+
+static __inline__ void
+outportb(unsigned __port, unsigned char __value)
+{
+    __asm__ __volatile__("outb %b0, %w1" : : "a"(__value), "Nd"((unsigned short)__port));
+}
+
+static __inline__ void
+outport(unsigned __port, unsigned __value)
+{
+    __asm__ __volatile__("outw %w0, %w1" : : "a"((unsigned short)__value),
+                         "Nd"((unsigned short)__port));
+}
+
+/* Read and write memory at segment:offset, as in Turbo C. */
+#define peek(__s, __o) (*(int __far *)MK_FP(__s, __o))
+#define peekb(__s, __o) (*(char __far *)MK_FP(__s, __o))
+#define poke(__s, __o, __v) ((void)(*(int __far *)MK_FP(__s, __o) = (__v)))
+#define pokeb(__s, __o, __v) ((void)(*(char __far *)MK_FP(__s, __o) = (__v)))
 
 #ifdef __cplusplus
 }

@@ -99,6 +99,39 @@ _enable(void)
 #define FP_OFF(__p) ((unsigned short)(unsigned long)(void __far *)(__p))
 #endif
 
+/* The registers of int86, as in Open Watcom and Turbo C: x (or w) for the
+ * 16-bit registers, h for their bytes. cflag is the carry flag after the
+ * interrupt, flags all the flags. */
+struct WORDREGS {
+    unsigned short ax, bx, cx, dx, si, di;
+    unsigned short cflag, flags;
+};
+struct BYTEREGS {
+    unsigned char al, ah, bl, bh, cl, ch, dl, dh;
+};
+union REGS {
+    struct WORDREGS x;
+    struct WORDREGS w;
+    struct BYTEREGS h;
+};
+/* The segment registers. */
+struct SREGS {
+    unsigned short es, cs, ss, ds;
+};
+
+/* Call software interrupt __intno with the registers in *__in, and store
+ * the registers it returns in *__out (which may be __in). DS and ES are
+ * the program's data segment, or, for int86x and intdosx, those in *__sr,
+ * where the returned ones are stored. Return the returned AX. intdos and
+ * intdosx call INT 21h. */
+int int86(int __intno, union REGS *__in, union REGS *__out);
+int int86x(int __intno, union REGS *__in, union REGS *__out,
+           struct SREGS *__sr);
+int intdos(union REGS *__in, union REGS *__out);
+int intdosx(union REGS *__in, union REGS *__out, struct SREGS *__sr);
+/* The current segment registers. */
+void segread(struct SREGS *__sr);
+
 #ifdef __cplusplus
 }
 #endif
