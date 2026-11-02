@@ -41,7 +41,7 @@ time_t
 __msdos_mktime(const struct tm *tm)
 {
     static const uint16_t before[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-    int y = tm->tm_year + 1900;
+    int                   y = tm->tm_year + 1900;
     int32_t days = (y - 1970) * 365L + (y - 1969) / 4 - (y - 1901) / 100 + (y - 1601) / 400;
     days += before[tm->tm_mon] + tm->tm_mday - 1;
     if (tm->tm_mon > 1 && (y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)))

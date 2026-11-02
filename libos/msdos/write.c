@@ -40,8 +40,10 @@
 static int
 dos_write(int fd, const char *p, size_t n, size_t *done)
 {
-    struct __msdos_regs r = { .ax = 0x4000, .bx = (uint16_t)fd,
-                              .cx = (uint16_t)n, .dx = __MSDOS_OFF(p),
+    struct __msdos_regs r = { .ax = 0x4000,
+                              .bx = (uint16_t)fd,
+                              .cx = (uint16_t)n,
+                              .dx = __MSDOS_OFF(p),
                               .ds = __MSDOS_SEG(p) };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
@@ -60,8 +62,8 @@ ssize_t
 write(int fd, const void *buf, size_t count)
 {
     const char *p = buf;
-    size_t n;
-    int flags = __msdos_fdflags(fd);
+    size_t      n;
+    int         flags = __msdos_fdflags(fd);
 
     if (count > __MSDOS_MAX_IO)
         count = __MSDOS_MAX_IO;
@@ -78,7 +80,7 @@ write(int fd, const void *buf, size_t count)
         return n;
     }
 
-    char tmp[128];
+    char   tmp[128];
     size_t t = 0, pending = 0, done = 0;
     for (size_t i = 0; i <= count; i++) {
         if (i == count || t + 2 > sizeof(tmp)) {

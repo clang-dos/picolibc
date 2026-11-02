@@ -257,7 +257,7 @@ __bufio_seek(FILE *f, off_t offset, int whence)
     __off_t buf_pos = bf->pos - bf->len;
 
     /* In a text file, buffer offsets are not file offsets. */
-    bool text = bufio_text(bf);
+    bool    text = bufio_text(bf);
 
     switch (whence) {
     case SEEK_CUR:

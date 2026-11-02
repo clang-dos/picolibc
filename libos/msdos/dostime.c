@@ -40,9 +40,9 @@ static int32_t
 days_from_civil(int y, unsigned m, unsigned d)
 {
     y -= m <= 2;
-    int era = (y >= 0 ? y : y - 399) / 400;
-    unsigned yoe = (unsigned)(y - era * 400);
-    unsigned doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1;
+    int           era = (y >= 0 ? y : y - 399) / 400;
+    unsigned      yoe = (unsigned)(y - era * 400);
+    unsigned      doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1;
     unsigned long doe = yoe * 365UL + yoe / 4 - yoe / 100 + doy;
     return era * 146097L + (int32_t)doe - 719468L;
 }
@@ -55,16 +55,15 @@ __msdos_time(int64_t *sec, uint16_t *centi)
     struct __msdos_regs d1, t, d2;
     do {
         /* Unused registers are zero: DS and ES of 0 are DGROUP. */
-        d1 = (struct __msdos_regs){ .ax = 0x2a00 };
+        d1 = (struct __msdos_regs) { .ax = 0x2a00 };
         __msdos_int21(&d1);
-        t = (struct __msdos_regs){ .ax = 0x2c00 };
+        t = (struct __msdos_regs) { .ax = 0x2c00 };
         __msdos_int21(&t);
-        d2 = (struct __msdos_regs){ .ax = 0x2a00 };
+        d2 = (struct __msdos_regs) { .ax = 0x2a00 };
         __msdos_int21(&d2);
         /* Read again if the date changed at midnight. */
     } while (d1.cx != d2.cx || d1.dx != d2.dx);
     int32_t days = days_from_civil(d1.cx, d1.dx >> 8, d1.dx & 0xff);
-    *sec = (int64_t)days * 86400 + (uint32_t)(t.cx >> 8) * 3600
-        + (t.cx & 0xff) * 60 + (t.dx >> 8);
+    *sec = (int64_t)days * 86400 + (uint32_t)(t.cx >> 8) * 3600 + (t.cx & 0xff) * 60 + (t.dx >> 8);
     *centi = t.dx & 0xff;
 }

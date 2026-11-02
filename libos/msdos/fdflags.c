@@ -38,8 +38,7 @@
 
 /* stdin, stdout, stderr, stdaux and stdprn start in text mode. */
 uint8_t __msdos_fd_flags[__MSDOS_MAX_FD] = {
-    __MSDOS_FD_TEXT, __MSDOS_FD_TEXT, __MSDOS_FD_TEXT,
-    __MSDOS_FD_TEXT, __MSDOS_FD_TEXT,
+    __MSDOS_FD_TEXT, __MSDOS_FD_TEXT, __MSDOS_FD_TEXT, __MSDOS_FD_TEXT, __MSDOS_FD_TEXT,
 };
 
 /* The mode for open() calls that give neither O_TEXT nor O_BINARY. */

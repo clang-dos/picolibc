@@ -53,7 +53,7 @@
 #include "arena.h"
 
 #define MK(seg, off) ((char __far *)(((uint32_t)(seg) << 16) | (off)))
-#define SEG(p) ((uint16_t)((uint32_t)(const void __far *)(p) >> 16))
+#define SEG(p)       ((uint16_t)((uint32_t)(const void __far *)(p) >> 16))
 
 /* The size of a new segment for the heap. */
 #define GROW 0x2000u

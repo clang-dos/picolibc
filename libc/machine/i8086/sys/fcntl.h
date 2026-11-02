@@ -53,8 +53,8 @@ _BEGIN_STD_C
 extern int _fmode;
 
 /* Set a handle to O_TEXT or O_BINARY. Returns the previous mode, or -1. */
-int setmode(int fd, int mode);
-int _setmode(int fd, int mode);
+int        setmode(int fd, int mode);
+int        _setmode(int fd, int mode);
 
 _END_STD_C
 

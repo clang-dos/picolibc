@@ -75,11 +75,11 @@ dos_alloc(uint16_t paras)
     struct __msdos_regs r = { .ax = 0x5800 };
     __msdos_int21(&r);
     uint16_t old = r.ax;
-    r = (struct __msdos_regs){ .ax = 0x5801, .bx = 2 };
+    r = (struct __msdos_regs) { .ax = 0x5801, .bx = 2 };
     __msdos_int21(&r);
-    r = (struct __msdos_regs){ .ax = 0x4800, .bx = paras };
+    r = (struct __msdos_regs) { .ax = 0x4800, .bx = paras };
     uint16_t seg = __msdos_int21(&r) ? 0 : r.ax;
-    r = (struct __msdos_regs){ .ax = 0x5801, .bx = old };
+    r = (struct __msdos_regs) { .ax = 0x5801, .bx = old };
     __msdos_int21(&r);
     return seg;
 }
@@ -114,8 +114,7 @@ shrink_program(uint16_t paras)
     if (mem_top - low > paras + 1u)
         top = mem_top - paras - 1;
 #endif
-    struct __msdos_regs r = { .ax = 0x4a00, .bx = top - __msdos_psp,
-                              .es = __msdos_psp };
+    struct __msdos_regs r = { .ax = 0x4a00, .bx = top - __msdos_psp, .es = __msdos_psp };
     if (__msdos_int21(&r))
         return 0;
     mem_top = top;

@@ -125,7 +125,7 @@ static int
 arena_resize(void ARENA_Q *q, uint16_t need)
 {
     char ARENA_Q *p = (char ARENA_Q *)q - 2;
-    uint16_t size = arena_merge(p);
+    uint16_t      size = arena_merge(p);
     if (size < need)
         return 0;
     arena_take(p, size, need);

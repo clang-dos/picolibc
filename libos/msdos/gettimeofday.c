@@ -41,7 +41,7 @@ gettimeofday(struct timeval * restrict tv, void * restrict tz)
 {
     (void)tz;
     if (tv) {
-        int64_t s;
+        int64_t  s;
         uint16_t c;
         __msdos_time(&s, &c);
         tv->tv_sec = s;

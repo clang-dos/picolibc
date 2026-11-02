@@ -41,8 +41,7 @@
 int
 chdir(const char *path)
 {
-    struct __msdos_regs r = { .ax = 0x3b00, .dx = __MSDOS_OFF(path),
-                              .ds = __MSDOS_SEG(path) };
+    struct __msdos_regs r = { .ax = 0x3b00, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     return 0;

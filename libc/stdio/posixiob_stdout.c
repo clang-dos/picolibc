@@ -39,9 +39,10 @@ static char                write_buf[BUFSIZ];
 
 /* A write-only stream never reads (freopen sets read() again), so it does
  * not link read() and its text mode handling. */
-static struct __file_bufio __stdout = FDEV_SETUP_BUFIO(1, write_buf, BUFSIZ, NULL, write, lseek, close, __SWR, __BLBF);
+static struct __file_bufio __stdout
+    = FDEV_SETUP_BUFIO(1, write_buf, BUFSIZ, NULL, write, lseek, close, __SWR, __BLBF);
 
-FILE * const               __posix_stdout = &__stdout.xfile.cfile.file;
+FILE * const __posix_stdout = &__stdout.xfile.cfile.file;
 
 __weak_reference(__posix_stdout, stdout);
 

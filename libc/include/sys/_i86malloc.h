@@ -70,30 +70,27 @@ size_t       _msize(void *) __picolibc_export;
 /* The near heap of the far data models on DOS is an array in DGROUP, of
    4 KiB unless one file of the program has _NEAR_HEAP_SIZE(bytes). */
 #define _NEAR_HEAP_SIZE(__n)                    \
-    char __near __msdos_near_heap[(__n)];       \
+    char __near  __msdos_near_heap[(__n)];      \
     const size_t __msdos_near_heap_size = (__n)
 #endif
 
 #ifdef __I86_OVERLOAD
 /* The pointers that do not convert to the default ones. */
 #ifdef __I86_NEAR_DATA__
-#define __I86_HEAP __far
-#define __I86_HEAP_FREE _ffree
+#define __I86_HEAP         __far
+#define __I86_HEAP_FREE    _ffree
 #define __I86_HEAP_REALLOC _frealloc
-#define __I86_HEAP_MSIZE _fmsize
+#define __I86_HEAP_MSIZE   _fmsize
 #else
-#define __I86_HEAP __near
-#define __I86_HEAP_FREE _nfree
+#define __I86_HEAP         __near
+#define __I86_HEAP_FREE    _nfree
 #define __I86_HEAP_REALLOC _nrealloc
-#define __I86_HEAP_MSIZE _nmsize
+#define __I86_HEAP_MSIZE   _nmsize
 #endif
-__I86_OVERLOAD(void, free, __I86_HEAP_FREE, (void __I86_HEAP *__p), (__p),
-               __I86_NOT_NULL(__p))
-__I86_OVERLOAD(void __I86_HEAP *, realloc, __I86_HEAP_REALLOC,
-               (void __I86_HEAP *__p, size_t __n), (__p, __n),
-               __I86_NOT_NULL(__p))
-__I86_OVERLOAD(size_t, _msize, __I86_HEAP_MSIZE, (void __I86_HEAP *__p),
-               (__p), __I86_NOT_NULL(__p))
+__I86_OVERLOAD(void, free, __I86_HEAP_FREE, (void __I86_HEAP *__p), (__p), __I86_NOT_NULL(__p))
+__I86_OVERLOAD(void __I86_HEAP *, realloc, __I86_HEAP_REALLOC, (void __I86_HEAP *__p, size_t __n),
+               (__p, __n), __I86_NOT_NULL(__p))
+__I86_OVERLOAD(size_t, _msize, __I86_HEAP_MSIZE, (void __I86_HEAP *__p), (__p), __I86_NOT_NULL(__p))
 #undef __I86_HEAP
 #undef __I86_HEAP_FREE
 #undef __I86_HEAP_REALLOC

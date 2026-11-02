@@ -70,10 +70,13 @@ uint32_t __WIN16_API GetWinFlags(void);
 
 static uint32_t state[16] = {
     /* "expand 32-byte k", so that the state is never all zero. */
-    0x61707865, 0x3320646e, 0x79622d32, 0x6b206574,
+    0x61707865,
+    0x3320646e,
+    0x79622d32,
+    0x6b206574,
 };
-static uint8_t  absorbed; /* 16-bit halves absorbed since the permutation */
-static int8_t   tsc = -1; /* the CPU has RDTSC: -1 not known yet */
+static uint8_t absorbed; /* 16-bit halves absorbed since the permutation */
+static int8_t  tsc = -1; /* the CPU has RDTSC: -1 not known yet */
 
 static uint32_t
 rotl(uint32_t x, int n)
@@ -81,10 +84,9 @@ rotl(uint32_t x, int n)
     return (x << n) | (x >> (32 - n));
 }
 
-#define QR(a, b, c, d)                                                         \
-    (s[a] += s[b], s[d] = rotl(s[d] ^ s[a], 16), s[c] += s[d],                 \
-     s[b] = rotl(s[b] ^ s[c], 12), s[a] += s[b], s[d] = rotl(s[d] ^ s[a], 8),  \
-     s[c] += s[d], s[b] = rotl(s[b] ^ s[c], 7))
+#define QR(a, b, c, d)                                                                       \
+    (s[a] += s[b], s[d] = rotl(s[d] ^ s[a], 16), s[c] += s[d], s[b] = rotl(s[b] ^ s[c], 12), \
+     s[a] += s[b], s[d] = rotl(s[d] ^ s[a], 8), s[c] += s[d], s[b] = rotl(s[b] ^ s[c], 7))
 
 /* The ChaCha8 permutation. */
 static void
@@ -155,18 +157,18 @@ has_tsc(void)
      * an 80386, so they are bytes. CPUID exists if the ID flag (EFLAGS
      * bit 21) can be changed. */
     uint16_t id;
-    __asm__ volatile(".byte 0x66, 0x9c\n\t"                   /* pushfl */
-                     ".byte 0x66, 0x58\n\t"                   /* popl %eax */
-                     ".byte 0x66, 0x89, 0xc1\n\t"             /* movl %eax, %ecx */
-                     ".byte 0x66, 0x35, 0, 0, 0x20, 0\n\t"    /* xorl $0x200000, %eax */
-                     ".byte 0x66, 0x50\n\t"                   /* pushl %eax */
-                     ".byte 0x66, 0x9d\n\t"                   /* popfl */
-                     ".byte 0x66, 0x9c\n\t"                   /* pushfl */
-                     ".byte 0x66, 0x58\n\t"                   /* popl %eax */
-                     ".byte 0x66, 0x51\n\t"                   /* pushl %ecx */
-                     ".byte 0x66, 0x9d\n\t"                   /* popfl */
-                     ".byte 0x66, 0x31, 0xc8\n\t"             /* xorl %ecx, %eax */
-                     ".byte 0x66, 0xc1, 0xe8, 0x10"             /* shrl $16, %eax */
+    __asm__ volatile(".byte 0x66, 0x9c\n\t"                /* pushfl */
+                     ".byte 0x66, 0x58\n\t"                /* popl %eax */
+                     ".byte 0x66, 0x89, 0xc1\n\t"          /* movl %eax, %ecx */
+                     ".byte 0x66, 0x35, 0, 0, 0x20, 0\n\t" /* xorl $0x200000, %eax */
+                     ".byte 0x66, 0x50\n\t"                /* pushl %eax */
+                     ".byte 0x66, 0x9d\n\t"                /* popfl */
+                     ".byte 0x66, 0x9c\n\t"                /* pushfl */
+                     ".byte 0x66, 0x58\n\t"                /* popl %eax */
+                     ".byte 0x66, 0x51\n\t"                /* pushl %ecx */
+                     ".byte 0x66, 0x9d\n\t"                /* popfl */
+                     ".byte 0x66, 0x31, 0xc8\n\t"          /* xorl %ecx, %eax */
+                     ".byte 0x66, 0xc1, 0xe8, 0x10"        /* shrl $16, %eax */
                      : "=a"(id)
                      :
                      : "cx", "cc");
@@ -174,10 +176,10 @@ has_tsc(void)
         return 0;
     /* CPUID leaf 1: EDX bit 4 is the TSC. EBX is kept whole. */
     uint16_t features;
-    __asm__ volatile(".byte 0x66, 0x53\n\t"                   /* pushl %ebx */
-                     ".byte 0x66, 0xb8, 1, 0, 0, 0\n\t"       /* movl $1, %eax */
-                     ".byte 0x0f, 0xa2\n\t"                   /* cpuid */
-                     ".byte 0x66, 0x5b"                         /* popl %ebx */
+    __asm__ volatile(".byte 0x66, 0x53\n\t"             /* pushl %ebx */
+                     ".byte 0x66, 0xb8, 1, 0, 0, 0\n\t" /* movl $1, %eax */
+                     ".byte 0x0f, 0xa2\n\t"             /* cpuid */
+                     ".byte 0x66, 0x5b"                 /* popl %ebx */
                      : "=d"(features)
                      :
                      : "ax", "cx", "cc");
@@ -190,11 +192,11 @@ absorb_tsc(void)
     uint16_t t0, t1, t2, t3;
     if (!tsc)
         return;
-    __asm__ volatile(".byte 0x0f, 0x31\n\t"                   /* rdtsc */
+    __asm__ volatile(".byte 0x0f, 0x31\n\t" /* rdtsc */
                      "movw %%ax, %%cx\n\t"
-                     ".byte 0x66, 0xc1, 0xe8, 0x10\n\t"       /* shrl $16, %eax */
+                     ".byte 0x66, 0xc1, 0xe8, 0x10\n\t" /* shrl $16, %eax */
                      "movw %%dx, %%bx\n\t"
-                     ".byte 0x66, 0xc1, 0xea, 0x10"             /* shrl $16, %edx */
+                     ".byte 0x66, 0xc1, 0xea, 0x10" /* shrl $16, %edx */
                      : "=c"(t0), "=a"(t1), "=b"(t2), "=d"(t3));
     absorb(t0);
     absorb(t1);
@@ -220,7 +222,7 @@ pit(void)
 static void
 collect(size_t len)
 {
-    int64_t sec;
+    int64_t  sec;
     uint16_t centi, ss, sp;
 
     if (tsc < 0)

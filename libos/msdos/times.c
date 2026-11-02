@@ -44,7 +44,7 @@ int64_t __msdos_start_centi;
 static void __attribute__((constructor))
 __msdos_init_clock(void)
 {
-    int64_t s;
+    int64_t  s;
     uint16_t c;
     __msdos_time(&s, &c);
     __msdos_start_centi = s * 100 + c;
@@ -55,7 +55,7 @@ __msdos_init_clock(void)
 clock_t
 times(struct tms *buf)
 {
-    int64_t s;
+    int64_t  s;
     uint16_t c;
     __msdos_time(&s, &c);
     int64_t now = s * 100 + c;

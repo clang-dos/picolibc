@@ -148,8 +148,8 @@
 #ifdef __I86__
 #undef INT_MAX
 #undef UINT_MAX
-#define INT_MAX  32767
-#define UINT_MAX 65535U
+#define INT_MAX    32767
+#define UINT_MAX   65535U
 #define __BUFSIZ__ 512
 #define __SMALL_BITFIELDS
 #define _POINTER_INT int

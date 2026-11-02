@@ -300,62 +300,47 @@ char __far *_fstrupr(char __far *) __picolibc_export;
    ones. */
 #if __MISC_VISIBLE || __POSIX_VISIBLE || __ISO_C_VISIBLE >= 2023
 __I86_OVERLOAD(void __far *, memccpy, _fmemccpy,
-               (void __far *__d, const void __far *__s, int __c, size_t __n),
-               (__d, __s, __c, __n), __I86_ANY)
-#endif
-__I86_OVERLOAD(void __far *, memchr, _fmemchr,
-               (const void __far *__s, int __c, size_t __n), (__s, __c, __n),
+               (void __far *__d, const void __far *__s, int __c, size_t __n), (__d, __s, __c, __n),
                __I86_ANY)
-__I86_OVERLOAD(int, memcmp, _fmemcmp,
-               (const void __far *__a, const void __far *__b, size_t __n),
+#endif
+__I86_OVERLOAD(void __far *, memchr, _fmemchr, (const void __far *__s, int __c, size_t __n),
+               (__s, __c, __n), __I86_ANY)
+__I86_OVERLOAD(int, memcmp, _fmemcmp, (const void __far *__a, const void __far *__b, size_t __n),
                (__a, __b, __n), __I86_ANY)
-__I86_OVERLOAD(void __far *, memcpy, _fmemcpy,
-               (void __far *__d, const void __far *__s, size_t __n),
+__I86_OVERLOAD(void __far *, memcpy, _fmemcpy, (void __far *__d, const void __far *__s, size_t __n),
                (__d, __s, __n), __I86_ANY)
 __I86_OVERLOAD(void __far *, memmove, _fmemmove,
-               (void __far *__d, const void __far *__s, size_t __n),
-               (__d, __s, __n), __I86_ANY)
-__I86_OVERLOAD(void __far *, memset, _fmemset,
-               (void __far *__d, int __c, size_t __n), (__d, __c, __n),
+               (void __far *__d, const void __far *__s, size_t __n), (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(void __far *, memset, _fmemset, (void __far *__d, int __c, size_t __n),
+               (__d, __c, __n), __I86_ANY)
+__I86_OVERLOAD(char __far *, strcat, _fstrcat, (char __far *__d, const char __far *__s), (__d, __s),
                __I86_ANY)
-__I86_OVERLOAD(char __far *, strcat, _fstrcat,
-               (char __far *__d, const char __far *__s), (__d, __s), __I86_ANY)
-__I86_OVERLOAD(char __far *, strchr, _fstrchr,
-               (const char __far *__s, int __c), (__s, __c), __I86_ANY)
-__I86_OVERLOAD(int, strcmp, _fstrcmp,
-               (const char __far *__a, const char __far *__b), (__a, __b),
+__I86_OVERLOAD(char __far *, strchr, _fstrchr, (const char __far *__s, int __c), (__s, __c),
                __I86_ANY)
-__I86_OVERLOAD(char __far *, strcpy, _fstrcpy,
-               (char __far *__d, const char __far *__s), (__d, __s), __I86_ANY)
-__I86_OVERLOAD(size_t, strcspn, _fstrcspn,
-               (const char __far *__s, const char __far *__r), (__s, __r),
+__I86_OVERLOAD(int, strcmp, _fstrcmp, (const char __far *__a, const char __far *__b), (__a, __b),
                __I86_ANY)
+__I86_OVERLOAD(char __far *, strcpy, _fstrcpy, (char __far *__d, const char __far *__s), (__d, __s),
+               __I86_ANY)
+__I86_OVERLOAD(size_t, strcspn, _fstrcspn, (const char __far *__s, const char __far *__r),
+               (__s, __r), __I86_ANY)
 #if __MISC_VISIBLE || __POSIX_VISIBLE >= 200809 || __XSI_VISIBLE >= 4 || __ISO_C_VISIBLE >= 2023
-__I86_OVERLOAD(char __far *, strdup, _fstrdup, (const char __far *__s), (__s),
-               __I86_ANY)
+__I86_OVERLOAD(char __far *, strdup, _fstrdup, (const char __far *__s), (__s), __I86_ANY)
 #endif
-__I86_OVERLOAD(size_t, strlen, _fstrlen, (const char __far *__s), (__s),
-               __I86_ANY)
+__I86_OVERLOAD(size_t, strlen, _fstrlen, (const char __far *__s), (__s), __I86_ANY)
 __I86_OVERLOAD(char __far *, strncat, _fstrncat,
-               (char __far *__d, const char __far *__s, size_t __n),
-               (__d, __s, __n), __I86_ANY)
-__I86_OVERLOAD(int, strncmp, _fstrncmp,
-               (const char __far *__a, const char __far *__b, size_t __n),
+               (char __far *__d, const char __far *__s, size_t __n), (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(int, strncmp, _fstrncmp, (const char __far *__a, const char __far *__b, size_t __n),
                (__a, __b, __n), __I86_ANY)
 __I86_OVERLOAD(char __far *, strncpy, _fstrncpy,
-               (char __far *__d, const char __far *__s, size_t __n),
-               (__d, __s, __n), __I86_ANY)
-__I86_OVERLOAD(char __far *, strpbrk, _fstrpbrk,
-               (const char __far *__s, const char __far *__r), (__s, __r),
+               (char __far *__d, const char __far *__s, size_t __n), (__d, __s, __n), __I86_ANY)
+__I86_OVERLOAD(char __far *, strpbrk, _fstrpbrk, (const char __far *__s, const char __far *__r),
+               (__s, __r), __I86_ANY)
+__I86_OVERLOAD(char __far *, strrchr, _fstrrchr, (const char __far *__s, int __c), (__s, __c),
                __I86_ANY)
-__I86_OVERLOAD(char __far *, strrchr, _fstrrchr,
-               (const char __far *__s, int __c), (__s, __c), __I86_ANY)
-__I86_OVERLOAD(size_t, strspn, _fstrspn,
-               (const char __far *__s, const char __far *__r), (__s, __r),
+__I86_OVERLOAD(size_t, strspn, _fstrspn, (const char __far *__s, const char __far *__r), (__s, __r),
                __I86_ANY)
-__I86_OVERLOAD(char __far *, strstr, _fstrstr,
-               (const char __far *__s, const char __far *__r), (__s, __r),
-               __I86_ANY)
+__I86_OVERLOAD(char __far *, strstr, _fstrstr, (const char __far *__s, const char __far *__r),
+               (__s, __r), __I86_ANY)
 #endif
 #endif
 

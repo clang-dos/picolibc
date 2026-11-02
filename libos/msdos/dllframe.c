@@ -54,15 +54,15 @@
 
 struct region {
     uint16_t ss;
-    char *base; /* NULL if not allocated */
-    char *top;
-    char *ptr;  /* the frame pointer of the code, at top when idle */
+    char    *base; /* NULL if not allocated */
+    char    *top;
+    char    *ptr; /* the frame pointer of the code, at top when idle */
 };
 
-static struct region regions[NREGIONS];
+static struct region  regions[NREGIONS];
 static struct region *last;
 
-extern uint16_t __win16_dll_frame_size;
+extern uint16_t       __win16_dll_frame_size;
 
 static void
 fail(void)

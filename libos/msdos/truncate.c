@@ -50,7 +50,7 @@ ftruncate(int fd, off_t length)
     if (cur < 0 || lseek(fd, length, SEEK_SET) < 0)
         return -1;
     struct __msdos_regs r = { .ax = 0x4000, .bx = (uint16_t)fd };
-    int ret = 0;
+    int                 ret = 0;
     if (__msdos_int21(&r))
         ret = __msdos_error(r.ax);
     lseek(fd, cur, SEEK_SET);

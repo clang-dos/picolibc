@@ -43,9 +43,10 @@ lseek(int fd, off_t offset, int whence)
         errno = EINVAL;
         return -1;
     }
-    uint32_t o = (uint32_t)offset;
-    struct __msdos_regs r = { .ax = 0x4200 | whence, .bx = (uint16_t)fd,
-                              .cx = (uint16_t)(o >> 16), .dx = (uint16_t)o };
+    uint32_t            o = (uint32_t)offset;
+    struct __msdos_regs r = {
+        .ax = 0x4200 | whence, .bx = (uint16_t)fd, .cx = (uint16_t)(o >> 16), .dx = (uint16_t)o
+    };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     /* A text file can be read again after its Ctrl-Z once moved. */

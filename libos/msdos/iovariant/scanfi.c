@@ -8,8 +8,8 @@
  * __i_scanf instead of scanf when the format string allows it, so
  * that programs which do not use floating point avoid linking it. */
 
-#define vfscanf __i_vfscanf
-#define scanf __i_scanf
+#define vfscanf        __i_vfscanf
+#define scanf          __i_scanf
 #define __scanfieee128 __i_scanfieee128
 
 #include "../../../libc/stdio/scanf.c"

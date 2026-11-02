@@ -33,7 +33,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef _LOCAL_MSDOS_H_
 #define _LOCAL_MSDOS_H_
 
@@ -70,13 +69,13 @@ struct __msdos_regs {
 
 /* Call INT 21h with *r and store the result registers back. Returns the
  * carry flag: nonzero when DOS reports an error, whose code is then in ax. */
-int __msdos_int21(struct __msdos_regs *r);
+int             __msdos_int21(struct __msdos_regs *r);
 
 /* Copy n bytes from seg:off to dst. */
-void __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n);
+void            __msdos_fromfar(void *dst, uint16_t seg, uint16_t off, size_t n);
 
 /* DOS memory of paras paragraphs, from dosmem.c: its segment, or 0. */
-uint16_t __msdos_alloc_paras(uint16_t paras);
+uint16_t        __msdos_alloc_paras(uint16_t paras);
 
 /* Segment of the program segment prefix. */
 extern uint16_t __msdos_psp;
@@ -84,14 +83,14 @@ extern uint16_t __msdos_psp;
 extern uint16_t __msdos_stack_top;
 
 /* Set errno from a DOS error code and return -1. */
-int __msdos_error(uint16_t code);
+int             __msdos_error(uint16_t code);
 
 /* Whether a handle is a character device (console, printer, NUL). */
-int __msdos_isdevice(int fd);
+int             __msdos_isdevice(int fd);
 
 /* Per-handle state that DOS does not keep. DOS has 20 handles per
  * program by default. */
-#define __MSDOS_MAX_FD 32
+#define __MSDOS_MAX_FD    32
 #define __MSDOS_FD_APPEND 0x01 /* O_APPEND: seek to the end before writes. */
 #define __MSDOS_FD_TEXT   0x02 /* O_TEXT: CR LF line ends, Ctrl-Z ends. */
 #define __MSDOS_FD_EOF    0x04 /* A text read reached Ctrl-Z. */
@@ -110,22 +109,22 @@ __msdos_set_fdflags(int fd, int flags)
 
 /* The DOS clock as seconds since 1970 (local time taken as UTC) and
  * hundredths of a second. */
-void __msdos_time(int64_t *sec, uint16_t *centi);
+void           __msdos_time(int64_t *sec, uint16_t *centi);
 /* __msdos_time at startup, in hundredths of a second. */
 extern int64_t __msdos_start_centi;
 
 #include <time.h>
-time_t __msdos_mktime(const struct tm *tm);
+time_t       __msdos_mktime(const struct tm *tm);
 
 /* Heap bounds. crt0 defines __heap_start after the stack, or after the
  * program with far data pointers; startup sets the heap's base from it, and
  * its end from the memory DOS gave the program. */
-extern char __msdos_heap_start[] __asm__("___heap_start");
+extern char  __msdos_heap_start[] __asm__("___heap_start");
 extern char *__msdos_heap_base;
 extern char *__msdos_brk;
 extern char *__msdos_heap_end;
 
-void __msdos_start(void);
+void         __msdos_start(void);
 
 #ifdef __WINDOWS__
 /* 16-bit Windows: the task's handles from InitTask, and the KERNEL
@@ -135,24 +134,23 @@ extern uint16_t __win16_hinstance;
 extern uint16_t __win16_hprevinstance;
 extern uint16_t __win16_cmdshow;
 /* The command line (the PSP's command tail, NUL-terminated) for WinMain. */
-extern char __win16_cmdline[128];
+extern char     __win16_cmdline[128];
 
 #define __WIN16_API __far __pascal
-uint16_t __WIN16_API LocalAlloc(uint16_t flags, uint16_t bytes);
-uint16_t __WIN16_API LocalFree(uint16_t handle);
-uint16_t __WIN16_API LocalReAlloc(uint16_t handle, uint16_t bytes,
-                                  uint16_t flags);
-uint16_t __WIN16_API LocalSize(uint16_t handle);
-uint16_t __WIN16_API GlobalAlloc(uint16_t flags, uint32_t bytes);
+uint16_t __WIN16_API    LocalAlloc(uint16_t flags, uint16_t bytes);
+uint16_t __WIN16_API    LocalFree(uint16_t handle);
+uint16_t __WIN16_API    LocalReAlloc(uint16_t handle, uint16_t bytes, uint16_t flags);
+uint16_t __WIN16_API    LocalSize(uint16_t handle);
+uint16_t __WIN16_API    GlobalAlloc(uint16_t flags, uint32_t bytes);
 void __far *__WIN16_API GlobalLock(uint16_t handle);
-int __WIN16_API GetModuleFileName(uint16_t module, char __far *name, int size);
+int __WIN16_API         GetModuleFileName(uint16_t module, char __far *name, int size);
 
 /* A DLL's local heap size and command line, from libentry.obj. */
-extern uint16_t __win16_heapsize;
-extern char __far *__win16_libcmdline;
-int __win16_libstart(void);
+extern uint16_t         __win16_heapsize;
+extern char __far      *__win16_libcmdline;
+int                     __win16_libstart(void);
 /* Take the heap from Windows. */
-void __win16_init_heap(void);
+void                    __win16_init_heap(void);
 #endif
 
 #endif /* _LOCAL_MSDOS_H_ */

@@ -38,13 +38,12 @@
 #include "local-msdos.h"
 
 #ifdef __WINDOWS__
-int __WIN16_API WinMain(uint16_t instance, uint16_t prev_instance,
-                        char __far *cmdline, int cmdshow);
+int __WIN16_API WinMain(uint16_t instance, uint16_t prev_instance, char __far *cmdline,
+                        int cmdshow);
 
 int
 main(void)
 {
-    return WinMain(__win16_hinstance, __win16_hprevinstance,
-                   __win16_cmdline, __win16_cmdshow);
+    return WinMain(__win16_hinstance, __win16_hprevinstance, __win16_cmdline, __win16_cmdshow);
 }
 #endif

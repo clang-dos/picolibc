@@ -8,8 +8,8 @@
  * __i_snprintf instead of snprintf when the format string allows it, so
  * that programs which do not use floating point avoid linking it. */
 
-#define vfprintf __i_vfprintf
-#define snprintf __i_snprintf
+#define vfprintf          __i_vfprintf
+#define snprintf          __i_snprintf
 #define __snprintfieee128 __i_snprintfieee128
 
 #include "../../../libc/stdio/snprintf.c"

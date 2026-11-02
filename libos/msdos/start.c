@@ -42,7 +42,7 @@ uint16_t __msdos_psp;
 #if !defined(__TINY__) && !defined(__WINDOWS__)
 uint16_t __msdos_stack_top;
 #endif
-char **environ;
+char     **environ;
 
 extern int main(int, char **, char **);
 
@@ -84,8 +84,8 @@ init_heap(void)
 #elif defined(__COMPACT__) || defined(__LARGE__)
     /* The heap is a segment of its own after the program, up to 64 KiB or
      * the end of the program's memory, which is at PSP:2. */
-    uint16_t para = __MSDOS_SEG(__msdos_heap_start) +
-                    ((__MSDOS_OFF(__msdos_heap_start) + 15u) >> 4);
+    uint16_t para
+        = __MSDOS_SEG(__msdos_heap_start) + ((__MSDOS_OFF(__msdos_heap_start) + 15u) >> 4);
     uint16_t top = peekw(__msdos_psp, 2);
     uint16_t paras = top > para ? top - para : 0;
     __msdos_heap_base = __msdos_brk = (char *)((uint32_t)para << 16);
@@ -131,7 +131,7 @@ init_heap(void)
 static char *
 init_environ(void)
 {
-    uint16_t seg = peekw(__msdos_psp, 0x2c);
+    uint16_t     seg = peekw(__msdos_psp, 0x2c);
     static char *empty[1];
     environ = empty;
     if (seg == 0)
@@ -152,7 +152,7 @@ init_environ(void)
             end++;
         end++;
     }
-    char *block = malloc(end);
+    char  *block = malloc(end);
     char **env = malloc((count + 1) * sizeof(char *));
     if (block == NULL || env == NULL)
         return NULL;
@@ -174,7 +174,7 @@ static int
 init_args(char **argv, char *argv0)
 {
     static char tail[128];
-    uint8_t len = peek(__msdos_psp, 0x80);
+    uint8_t     len = peek(__msdos_psp, 0x80);
     if (len > 126)
         len = 126;
     __msdos_fromfar(tail, __msdos_psp, 0x81, len);
@@ -229,7 +229,7 @@ __msdos_start(void)
             *p = '\0';
 #endif
     /* Read the command line before anything changes the DTA at PSP:80h. */
-    int argc = init_args(argv, NULL);
+    int   argc = init_args(argv, NULL);
     char *argv0 = init_environ();
 #ifdef __WINDOWS__
     /* The environment block need not end with the program's path. */
@@ -246,4 +246,3 @@ __msdos_start(void)
 #endif
     exit(main(argc, argv, environ));
 }
-

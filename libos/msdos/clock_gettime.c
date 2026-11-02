@@ -43,7 +43,7 @@ clock_gettime(clockid_t clock_id, struct timespec *tp)
         errno = EINVAL;
         return -1;
     }
-    int64_t s;
+    int64_t  s;
     uint16_t c;
     __msdos_time(&s, &c);
     tp->tv_sec = s;

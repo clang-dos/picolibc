@@ -44,7 +44,7 @@ nanosleep(const struct timespec *req, struct timespec *rem)
         errno = EINVAL;
         return -1;
     }
-    int64_t s;
+    int64_t  s;
     uint16_t c;
     __msdos_time(&s, &c);
     int64_t end = s * 100 + c + req->tv_sec * 100 + (req->tv_nsec + 9999999L) / 10000000L;

@@ -41,8 +41,8 @@
 static int
 dos_open(const char *path, int access)
 {
-    struct __msdos_regs r = { .ax = 0x3d00 | access, .dx = __MSDOS_OFF(path),
-                              .ds = __MSDOS_SEG(path) };
+    struct __msdos_regs r
+        = { .ax = 0x3d00 | access, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return -(int)r.ax;
     return r.ax;
@@ -51,15 +51,15 @@ dos_open(const char *path, int access)
 static int
 dos_create(const char *path, uint16_t fn, int readonly)
 {
-    struct __msdos_regs r = { .ax = fn << 8, .cx = readonly ? 1 : 0,
-                              .dx = __MSDOS_OFF(path),
-                              .ds = __MSDOS_SEG(path) };
+    struct __msdos_regs r = {
+        .ax = fn << 8, .cx = readonly ? 1 : 0, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path)
+    };
     if (__msdos_int21(&r))
         return -(int)r.ax;
     if (fn == 0x3c) {
         /* DOS empties an existing file here, but some emulators (emu2)
          * don't; writing 0 bytes at the start truncates it anyway. */
-        uint16_t fd = r.ax;
+        uint16_t            fd = r.ax;
         struct __msdos_regs w = { .ax = 0x4000, .bx = fd };
         __msdos_int21(&w);
         return fd;
@@ -100,7 +100,7 @@ open(const char *path, int flags, ...)
     if (fd < 0)
         return __msdos_error(-fd);
     int text = (flags & O_TEXT) || (!(flags & O_BINARY) && _fmode != O_BINARY);
-    __msdos_set_fdflags(fd, ((flags & O_APPEND) ? __MSDOS_FD_APPEND : 0) |
-                                (text ? __MSDOS_FD_TEXT : 0));
+    __msdos_set_fdflags(
+        fd, ((flags & O_APPEND) ? __MSDOS_FD_APPEND : 0) | (text ? __MSDOS_FD_TEXT : 0));
     return fd;
 }
