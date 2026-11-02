@@ -68,11 +68,31 @@ __attribute__((__noreturn__)) void _dos_keep(unsigned __retcode, unsigned __mems
  * had gone to __handler, which returns to the interrupted program. */
 __attribute__((__noreturn__)) void _chain_intr(void(__interrupt __far *__handler)());
 
-/* Turbo C's names for the vector functions. */
-#define getvect _dos_getvect
-#define setvect _dos_setvect
-#define disable _disable
-#define enable  _enable
+/* Turbo C's names for the vector functions. They are functions, not
+ * macros, so that the names stay free for members and parameters (such as
+ * a "bool enable" parameter in C++ code that includes this header). */
+static __inline__ void(__interrupt __far *getvect(unsigned __intno))()
+{
+    return _dos_getvect(__intno);
+}
+
+static __inline__ void
+setvect(unsigned __intno, void(__interrupt __far *__handler)())
+{
+    _dos_setvect(__intno, __handler);
+}
+
+static __inline__ void
+disable(void)
+{
+    _disable();
+}
+
+static __inline__ void
+enable(void)
+{
+    _enable();
+}
 
 /* Wait __ms milliseconds, timed by the 8253 timer. */
 void delay(unsigned __ms);
@@ -111,11 +131,31 @@ outport(unsigned __port, unsigned __value)
                          : "a"((unsigned short)__value), "Nd"((unsigned short)__port));
 }
 
-/* Read and write memory at segment:offset, as in Turbo C. */
-#define peek(__s, __o)       (*(int __far *)MK_FP(__s, __o))
-#define peekb(__s, __o)      (*(char __far *)MK_FP(__s, __o))
-#define poke(__s, __o, __v)  ((void)(*(int __far *)MK_FP(__s, __o) = (__v)))
-#define pokeb(__s, __o, __v) ((void)(*(char __far *)MK_FP(__s, __o) = (__v)))
+/* Read and write memory at segment:offset, as in Turbo C. These are
+ * functions too, since a peek() macro would break C++'s istream::peek(). */
+static __inline__ int
+peek(unsigned __s, unsigned __o)
+{
+    return *(int __far *)MK_FP(__s, __o);
+}
+
+static __inline__ char
+peekb(unsigned __s, unsigned __o)
+{
+    return *(char __far *)MK_FP(__s, __o);
+}
+
+static __inline__ void
+poke(unsigned __s, unsigned __o, int __v)
+{
+    *(int __far *)MK_FP(__s, __o) = __v;
+}
+
+static __inline__ void
+pokeb(unsigned __s, unsigned __o, char __v)
+{
+    *(char __far *)MK_FP(__s, __o) = __v;
+}
 
 #ifdef __cplusplus
 }
