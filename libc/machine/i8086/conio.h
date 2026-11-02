@@ -80,15 +80,7 @@ enum COLORS {
 
 /* The text modes of textmode(). C4350 is 43 lines on an EGA or 50 lines
  * on a VGA, and LASTMODE the mode before the last textmode() call. */
-enum text_modes {
-    LASTMODE = -1,
-    BW40 = 0,
-    C40 = 1,
-    BW80 = 2,
-    C80 = 3,
-    MONO = 7,
-    C4350 = 64
-};
+enum text_modes { LASTMODE = -1, BW40 = 0, C40 = 1, BW80 = 2, C80 = 3, MONO = 7, C4350 = 64 };
 
 /* The text window and screen, from gettextinfo(). Coordinates count from
  * 1 at the top left of the screen. */
@@ -101,8 +93,8 @@ struct text_info {
 };
 
 /* The cursor shapes of _setcursortype(). */
-#define _NOCURSOR 0
-#define _SOLIDCURSOR 1
+#define _NOCURSOR     0
+#define _SOLIDCURSOR  1
 #define _NORMALCURSOR 2
 
 /* Nonzero (the default): write to video memory. 0: go through the BIOS,
@@ -113,59 +105,55 @@ extern int directvideo;
 extern int _wscroll;
 
 /* The text window: the screen area that output, clrscr and gotoxy use. */
-void window(int __left, int __top, int __right, int __bottom);
-void clrscr(void);
-void clreol(void);
-void insline(void);
-void delline(void);
-void gotoxy(int __x, int __y);
-int wherex(void);
-int wherey(void);
+void       window(int __left, int __top, int __right, int __bottom);
+void       clrscr(void);
+void       clreol(void);
+void       insline(void);
+void       delline(void);
+void       gotoxy(int __x, int __y);
+int        wherex(void);
+int        wherey(void);
 
 /* Colors: the color of new text, of its background, or both as a
  * BIOS attribute (background * 16 + foreground). */
-void textcolor(int __color);
-void textbackground(int __color);
-void textattr(int __attr);
-void highvideo(void);
-void lowvideo(void);
-void normvideo(void);
+void       textcolor(int __color);
+void       textbackground(int __color);
+void       textattr(int __attr);
+void       highvideo(void);
+void       lowvideo(void);
+void       normvideo(void);
 
 /* The screen: the text mode, its state, and the cursor. */
-void textmode(int __mode);
-void gettextinfo(struct text_info *__r);
-void _setcursortype(int __type);
+void       textmode(int __mode);
+void       gettextinfo(struct text_info *__r);
+void       _setcursortype(int __type);
 
 /* Copy screen rectangles (2 bytes a cell: character, attribute) to and
  * from memory, or within the screen. Return 1, or 0 for a rectangle not
  * on the screen. */
-int gettext(int __left, int __top, int __right, int __bottom, void *__dest);
-int puttext(int __left, int __top, int __right, int __bottom,
-            const void *__src);
-int movetext(int __left, int __top, int __right, int __bottom,
-             int __destleft, int __desttop);
+int        gettext(int __left, int __top, int __right, int __bottom, void *__dest);
+int        puttext(int __left, int __top, int __right, int __bottom, const void *__src);
+int   movetext(int __left, int __top, int __right, int __bottom, int __destleft, int __desttop);
 
 /* Output in the text window. */
-int putch(int __c);
-int cputs(const char *__s);
-int cprintf(const char *__format, ...)
-    __attribute__((__format__(__printf__, 1, 2)));
-int vcprintf(const char *__format, va_list __ap);
+int   putch(int __c);
+int   cputs(const char *__s);
+int   cprintf(const char *__format, ...) __attribute__((__format__(__printf__, 1, 2)));
+int   vcprintf(const char *__format, va_list __ap);
 
 /* Keyboard. getch waits for a key and returns it without echo; a key
  * with no character (a function or arrow key) gives 0, then its scan
  * code on the next call. getche echoes it. kbhit is nonzero when a key
  * is waiting. ungetch pushes one character back. */
-int getch(void);
-int getche(void);
-int kbhit(void);
-int ungetch(int __c);
+int   getch(void);
+int   getche(void);
+int   kbhit(void);
+int   ungetch(int __c);
 
 /* Read a line: __buf[0] is the most characters to read; the line is
  * stored from __buf + 2, its length in __buf[1]. Returns __buf + 2. */
 char *cgets(char *__buf);
-int cscanf(const char *__format, ...)
-    __attribute__((__format__(__scanf__, 1, 2)));
+int   cscanf(const char *__format, ...) __attribute__((__format__(__scanf__, 1, 2)));
 /* Prompt and read a password of up to 8 characters, without echo. */
 char *getpass(const char *__prompt);
 
@@ -189,16 +177,18 @@ inpw(unsigned __port)
 static __inline__ unsigned
 outp(unsigned __port, unsigned __value)
 {
-    __asm__ __volatile__("outb %b0, %w1" : : "a"((unsigned char)__value),
-                         "Nd"((unsigned short)__port));
+    __asm__ __volatile__("outb %b0, %w1"
+                         :
+                         : "a"((unsigned char)__value), "Nd"((unsigned short)__port));
     return __value;
 }
 
 static __inline__ unsigned
 outpw(unsigned __port, unsigned __value)
 {
-    __asm__ __volatile__("outw %w0, %w1" : : "a"((unsigned short)__value),
-                         "Nd"((unsigned short)__port));
+    __asm__ __volatile__("outw %w0, %w1"
+                         :
+                         : "a"((unsigned short)__value), "Nd"((unsigned short)__port));
     return __value;
 }
 

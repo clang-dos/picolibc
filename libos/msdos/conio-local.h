@@ -43,22 +43,22 @@
 #include <stdint.h>
 
 struct __conio {
-    uint8_t ready;
+    uint8_t  ready;
     /* The window, counted from 0, inclusive. */
-    uint8_t left, top, right, bottom;
-    uint8_t attr, normattr;
-    uint8_t mode, lastmode;
-    uint8_t cols, rows;
+    uint8_t  left, top, right, bottom;
+    uint8_t  attr, normattr;
+    uint8_t  mode, lastmode;
+    uint8_t  cols, rows;
     /* The cursor, counted from 0 from the top left of the screen. */
-    uint8_t x, y;
-    uint16_t vseg; /* video memory of the displayed page */
-    int16_t ungot; /* ungetch's character, or -1 */
+    uint8_t  x, y;
+    uint16_t vseg;  /* video memory of the displayed page */
+    int16_t  ungot; /* ungetch's character, or -1 */
 };
 
 extern struct __conio __conio;
 
 /* The BIOS data area. */
-#define __BDA8(o) (*(volatile uint8_t __far *)MK_FP(0x40, (o)))
+#define __BDA8(o)  (*(volatile uint8_t __far *)MK_FP(0x40, (o)))
 #define __BDA16(o) (*(volatile uint16_t __far *)MK_FP(0x40, (o)))
 
 /* INT 10h with AX, BX, CX and DX; returns AX, and CX and DX through
@@ -80,16 +80,16 @@ __conio_int10(uint16_t ax, uint16_t bx, uint16_t *cx, uint16_t *dx)
 
 /* Read the screen size, mode and cursor from the BIOS (the first time,
  * also the window and colors). */
-void __conio_init(void);
+void  __conio_init(void);
 /* Make sure the state is set up, and take the cursor from the BIOS, which
  * other output may have moved. */
-void __conio_begin(void);
+void  __conio_begin(void);
 /* Move the BIOS cursor to the conio cursor. */
-void __conio_end(void);
+void  __conio_end(void);
 /* getpass, for getpass.c. */
 char *__conio_getpass(const char *prompt);
 /* Write c at the cursor, as putch does, without moving the BIOS cursor. */
-void __conio_put(int c);
+void  __conio_put(int c);
 /* The video memory of cell (x, y), counted from 0. */
 static __inline__ uint16_t __far *
 __conio_cell(unsigned x, unsigned y)

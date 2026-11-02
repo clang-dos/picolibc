@@ -101,8 +101,8 @@ static int
 in_screen(int left, int top, int right, int bottom)
 {
     __conio_begin();
-    return left >= 1 && top >= 1 && left <= right && top <= bottom &&
-           right <= __conio.cols && bottom <= __conio.rows;
+    return left >= 1 && top >= 1 && left <= right && top <= bottom && right <= __conio.cols
+        && bottom <= __conio.rows;
 }
 
 int
@@ -137,14 +137,14 @@ int
 movetext(int left, int top, int right, int bottom, int destleft, int desttop)
 {
     int destright = destleft + right - left, destbottom = desttop + bottom - top;
-    if (!in_screen(left, top, right, bottom) ||
-        !in_screen(destleft, desttop, destright, destbottom))
+    if (!in_screen(left, top, right, bottom)
+        || !in_screen(destleft, desttop, destright, destbottom))
         return 0;
     int w = right - left + 1;
     /* Copy in the order that never overwrites what is still to copy. */
     int down = desttop > top || (desttop == top && destleft > left);
     for (int i = 0; i <= bottom - top; i++) {
-        int r = down ? bottom - top - i : i;
+        int             r = down ? bottom - top - i : i;
         uint16_t __far *s = __conio_cell(left - 1, top - 1 + r);
         uint16_t __far *d = __conio_cell(destleft - 1, desttop - 1 + r);
         if (down)

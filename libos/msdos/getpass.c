@@ -39,8 +39,6 @@
 #include "conio-local.h"
 #include <unistd.h>
 
-
-
 char *
 getpass(const char *prompt)
 {

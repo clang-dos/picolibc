@@ -39,14 +39,14 @@
 #include <string.h>
 
 struct __conio __conio = { .ungot = -1 };
-int directvideo = 1;
-int _wscroll = 1;
+int            directvideo = 1;
+int            _wscroll = 1;
 
 void
 __conio_init(void)
 {
     uint16_t cx = 0, dx = 0;
-    uint8_t mode = __BDA8(0x49) & 0x7f;
+    uint8_t  mode = __BDA8(0x49) & 0x7f;
     __conio.mode = mode;
     __conio.cols = (uint8_t)__BDA16(0x4a);
     if (__conio.cols == 0)
@@ -205,8 +205,8 @@ window(int left, int top, int right, int bottom)
 {
     __conio_begin();
     left--, top--, right--, bottom--;
-    if (left < 0 || top < 0 || right >= __conio.cols || bottom >= __conio.rows ||
-        left > right || top > bottom)
+    if (left < 0 || top < 0 || right >= __conio.cols || bottom >= __conio.rows || left > right
+        || top > bottom)
         return;
     __conio.left = left;
     __conio.top = top;

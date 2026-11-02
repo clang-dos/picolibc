@@ -33,7 +33,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /* <dos.h> of the DOS compilers: interrupt vectors and resident programs
  * (TSRs), as in Open Watcom and Microsoft C, and the timing, sound, port
  * and memory functions of Turbo C. int86 and the registers are in
@@ -53,29 +52,27 @@ extern unsigned short __msdos_psp;
 #define _psp __msdos_psp
 
 /* The handler of interrupt __intno (INT 21h function 35h). */
-void (__interrupt __far *_dos_getvect(unsigned __intno))();
+void(__interrupt __far *_dos_getvect(unsigned __intno))();
 
 /* Point interrupt __intno at __handler (INT 21h function 25h). */
-void _dos_setvect(unsigned __intno, void (__interrupt __far *__handler)());
+void _dos_setvect(unsigned __intno, void(__interrupt __far *__handler)());
 
 /* End the program and stay resident (INT 21h function 31h), keeping
  * __memsize paragraphs of 16 bytes from the PSP, or, with 0, the program
  * up to the end of its heap. __retcode is the exit status. atexit
  * functions and destructors do not run, and open files stay open. */
-__attribute__((__noreturn__)) void _dos_keep(unsigned __retcode,
-                                             unsigned __memsize);
+__attribute__((__noreturn__)) void _dos_keep(unsigned __retcode, unsigned __memsize);
 
 /* Called from an interrupt function: restore the registers it saved (with
  * any changes made to them) and jump to __handler, as if the interrupt
  * had gone to __handler, which returns to the interrupted program. */
-__attribute__((__noreturn__)) void
-_chain_intr(void (__interrupt __far *__handler)());
+__attribute__((__noreturn__)) void _chain_intr(void(__interrupt __far *__handler)());
 
 /* Turbo C's names for the vector functions. */
 #define getvect _dos_getvect
 #define setvect _dos_setvect
 #define disable _disable
-#define enable _enable
+#define enable  _enable
 
 /* Wait __ms milliseconds, timed by the 8253 timer. */
 void delay(unsigned __ms);
@@ -109,14 +106,15 @@ outportb(unsigned __port, unsigned char __value)
 static __inline__ void
 outport(unsigned __port, unsigned __value)
 {
-    __asm__ __volatile__("outw %w0, %w1" : : "a"((unsigned short)__value),
-                         "Nd"((unsigned short)__port));
+    __asm__ __volatile__("outw %w0, %w1"
+                         :
+                         : "a"((unsigned short)__value), "Nd"((unsigned short)__port));
 }
 
 /* Read and write memory at segment:offset, as in Turbo C. */
-#define peek(__s, __o) (*(int __far *)MK_FP(__s, __o))
-#define peekb(__s, __o) (*(char __far *)MK_FP(__s, __o))
-#define poke(__s, __o, __v) ((void)(*(int __far *)MK_FP(__s, __o) = (__v)))
+#define peek(__s, __o)       (*(int __far *)MK_FP(__s, __o))
+#define peekb(__s, __o)      (*(char __far *)MK_FP(__s, __o))
+#define poke(__s, __o, __v)  ((void)(*(int __far *)MK_FP(__s, __o) = (__v)))
 #define pokeb(__s, __o, __v) ((void)(*(char __far *)MK_FP(__s, __o) = (__v)))
 
 #ifdef __cplusplus

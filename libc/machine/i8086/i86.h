@@ -33,7 +33,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /* Open Watcom's <i86.h>: the registers an interrupt function saves, and
  * interrupts off and on. */
 
@@ -56,7 +55,7 @@ struct INTPACKW {
 };
 struct INTPACKB {
     unsigned short : 16, : 16, : 16, : 16, : 16, : 16, : 16, : 16;
-    unsigned char  bl, bh, dl, dh, cl, ch, al, ah;
+    unsigned char bl, bh, dl, dh, cl, ch, al, ah;
 };
 union INTPACK {
     struct INTPACKB h;
@@ -92,9 +91,8 @@ _enable(void)
 
 /* Far pointers from a segment and an offset, and back. */
 #ifndef MK_FP
-#define MK_FP(__s, __o)                                                   \
-    ((void __far *)(((unsigned long)(unsigned short)(__s) << 16) |        \
-                    (unsigned short)(__o)))
+#define MK_FP(__s, __o)                                                                    \
+    ((void __far *)(((unsigned long)(unsigned short)(__s) << 16) | (unsigned short)(__o)))
 #define FP_SEG(__p) ((unsigned short)((unsigned long)(void __far *)(__p) >> 16))
 #define FP_OFF(__p) ((unsigned short)(unsigned long)(void __far *)(__p))
 #endif
@@ -124,11 +122,10 @@ struct SREGS {
  * the program's data segment, or, for int86x and intdosx, those in *__sr,
  * where the returned ones are stored. Return the returned AX. intdos and
  * intdosx call INT 21h. */
-int int86(int __intno, union REGS *__in, union REGS *__out);
-int int86x(int __intno, union REGS *__in, union REGS *__out,
-           struct SREGS *__sr);
-int intdos(union REGS *__in, union REGS *__out);
-int intdosx(union REGS *__in, union REGS *__out, struct SREGS *__sr);
+int  int86(int __intno, union REGS *__in, union REGS *__out);
+int  int86x(int __intno, union REGS *__in, union REGS *__out, struct SREGS *__sr);
+int  intdos(union REGS *__in, union REGS *__out);
+int  intdosx(union REGS *__in, union REGS *__out, struct SREGS *__sr);
 /* The current segment registers. */
 void segread(struct SREGS *__sr);
 
