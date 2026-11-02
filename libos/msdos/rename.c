@@ -39,21 +39,23 @@
 int
 rename(const char *old, const char *new)
 {
-    struct __msdos_regs r = { .ax = 0x5600, .dx = __MSDOS_OFF(old),
-                              .ds = __MSDOS_SEG(old), .di = __MSDOS_OFF(new),
+    struct __msdos_regs r = { .ax = 0x5600,
+                              .dx = __MSDOS_OFF(old),
+                              .ds = __MSDOS_SEG(old),
+                              .di = __MSDOS_OFF(new),
                               .es = __MSDOS_SEG(new) };
     if (__msdos_int21(&r)) {
         if (r.ax != 0x05 && r.ax != 0x50)
             return __msdos_error(r.ax);
         /* POSIX rename replaces an existing file; DOS refuses. */
-        struct __msdos_regs u = { .ax = 0x4100, .dx = __MSDOS_OFF(new),
-                                  .ds = __MSDOS_SEG(new) };
+        struct __msdos_regs u = { .ax = 0x4100, .dx = __MSDOS_OFF(new), .ds = __MSDOS_SEG(new) };
         if (__msdos_int21(&u))
             return __msdos_error(r.ax);
-        r = (struct __msdos_regs){ .ax = 0x5600, .dx = __MSDOS_OFF(old),
-                                   .ds = __MSDOS_SEG(old),
-                                   .di = __MSDOS_OFF(new),
-                                   .es = __MSDOS_SEG(new) };
+        r = (struct __msdos_regs) { .ax = 0x5600,
+                                    .dx = __MSDOS_OFF(old),
+                                    .ds = __MSDOS_SEG(old),
+                                    .di = __MSDOS_OFF(new),
+                                    .es = __MSDOS_SEG(new) };
         if (__msdos_int21(&r))
             return __msdos_error(r.ax);
     }

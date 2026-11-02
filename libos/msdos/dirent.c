@@ -43,22 +43,22 @@
  * current DTA again before each find next, so other calls that search
  * (stat) can come in between. The search pattern follows it. */
 struct dta {
-    uint8_t reserved[21];
-    uint8_t attr;
+    uint8_t  reserved[21];
+    uint8_t  attr;
     uint16_t time, date;
     uint32_t size;
-    char name[13];
+    char     name[13];
 } __attribute__((packed));
 
-#define DIR_DTA(d) ((struct dta *)(d)->buf)
-#define DIR_PATTERN(d) ((d)->buf + 64)
+#define DIR_DTA(d)      ((struct dta *)(d)->buf)
+#define DIR_PATTERN(d)  ((d)->buf + 64)
 #define DIR_PATTERN_MAX (sizeof(((DIR *)0)->buf) - 64)
 
 static void
 set_dta(DIR *d)
 {
-    struct __msdos_regs r = { .ax = 0x1a00, .dx = __MSDOS_OFF(DIR_DTA(d)),
-                              .ds = __MSDOS_SEG(DIR_DTA(d)) };
+    struct __msdos_regs r
+        = { .ax = 0x1a00, .dx = __MSDOS_OFF(DIR_DTA(d)), .ds = __MSDOS_SEG(DIR_DTA(d)) };
     __msdos_int21(&r);
 }
 
@@ -68,7 +68,8 @@ find_first(DIR *d)
 {
     set_dta(d);
     /* Files, hidden and system files, and directories. */
-    struct __msdos_regs r = { .ax = 0x4e00, .cx = 0x16,
+    struct __msdos_regs r = { .ax = 0x4e00,
+                              .cx = 0x16,
                               .dx = __MSDOS_OFF(DIR_PATTERN(d)),
                               .ds = __MSDOS_SEG(DIR_PATTERN(d)) };
     if (__msdos_int21(&r)) {
@@ -84,8 +85,7 @@ find_first(DIR *d)
 static int
 attributes(const char *path)
 {
-    struct __msdos_regs r = { .ax = 0x4300, .dx = __MSDOS_OFF(path),
-                              .ds = __MSDOS_SEG(path) };
+    struct __msdos_regs r = { .ax = 0x4300, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return -1;
     return r.cx;
@@ -149,7 +149,7 @@ readdir(DIR *d)
 {
     if (d->count == 0)
         return NULL;
-    struct dta *dta = DIR_DTA(d);
+    struct dta    *dta = DIR_DTA(d);
     struct dirent *e = &d->dirent;
     e->d_ino = 0;
     e->d_type = (dta->attr & 0x10) ? DT_DIR : DT_REG;

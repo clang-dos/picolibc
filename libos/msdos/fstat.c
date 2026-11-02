@@ -62,9 +62,12 @@ fstat(int fd, struct stat *st)
     struct __msdos_regs r = { .ax = 0x5700, .bx = (uint16_t)fd };
     if (!__msdos_int21(&r)) {
         struct tm tm = {
-            .tm_year = (r.dx >> 9) + 80, .tm_mon = ((r.dx >> 5) & 15) - 1,
-            .tm_mday = r.dx & 31, .tm_hour = r.cx >> 11,
-            .tm_min = (r.cx >> 5) & 63, .tm_sec = (r.cx & 31) * 2,
+            .tm_year = (r.dx >> 9) + 80,
+            .tm_mon = ((r.dx >> 5) & 15) - 1,
+            .tm_mday = r.dx & 31,
+            .tm_hour = r.cx >> 11,
+            .tm_min = (r.cx >> 5) & 63,
+            .tm_sec = (r.cx & 31) * 2,
         };
         st->st_mtime = st->st_atime = st->st_ctime = __msdos_mktime(&tm);
     }

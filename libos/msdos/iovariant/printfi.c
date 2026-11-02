@@ -8,8 +8,8 @@
  * __i_printf instead of printf when the format string allows it, so
  * that programs which do not use floating point avoid linking it. */
 
-#define vfprintf __i_vfprintf
-#define printf __i_printf
+#define vfprintf        __i_vfprintf
+#define printf          __i_printf
 #define __printfieee128 __i_printfieee128
 
 #include "../../../libc/stdio/printf.c"

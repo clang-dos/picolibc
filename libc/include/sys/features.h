@@ -161,11 +161,10 @@ extern "C" {
 /* C++ libraries (libc++) use POSIX interfaces such as locale_t even with
  * -std=c++NN, which defines __STRICT_ANSI__; g++ defines _GNU_SOURCE for
  * them. In C++, __STRICT_ANSI__ alone leaves the default set visible. */
-#if defined(_BSD_SOURCE) || defined(_SVID_SOURCE)                                          \
-    || ((!defined(__STRICT_ANSI__) || defined(__cplusplus)) && !defined(_ANSI_SOURCE)     \
-        && !defined(_ISOC99_SOURCE)                                                        \
-        && !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) && !defined(_XOPEN_SOURCE) \
-        && !defined(_ZEPHYR_SOURCE))
+#if defined(_BSD_SOURCE) || defined(_SVID_SOURCE)                                           \
+    || ((!defined(__STRICT_ANSI__) || defined(__cplusplus)) && !defined(_ANSI_SOURCE)       \
+        && !defined(_ISOC99_SOURCE) && !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) \
+        && !defined(_XOPEN_SOURCE) && !defined(_ZEPHYR_SOURCE))
 #undef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE 1
 #endif

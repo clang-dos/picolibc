@@ -147,8 +147,8 @@ typedef __SIZE_TYPE__ __ssize_t;
 /* Use __PTRDIFF_MAX__ rather than a cast of (__SIZE_MAX__ >> 1): it is the
    signed, pointer-width maximum and, unlike a cast expression, is usable in
    preprocessor #if directives as <limits.h> macros are required to be. */
-#if defined(__SIZEOF_SIZE_T__) && defined(__SIZEOF_PTRDIFF_T__) && \
-    __SIZEOF_SIZE_T__ < __SIZEOF_PTRDIFF_T__
+#if defined(__SIZEOF_SIZE_T__) && defined(__SIZEOF_PTRDIFF_T__) \
+    && __SIZEOF_SIZE_T__ < __SIZEOF_PTRDIFF_T__
 /* ptrdiff_t is wider than size_t (the i8086 huge model with a 16-bit
    size_t), so use the maximum of the type with size_t's size. */
 #if __SIZEOF_SIZE_T__ == __SIZEOF_INT__

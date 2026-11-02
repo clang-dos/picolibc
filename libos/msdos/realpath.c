@@ -51,7 +51,8 @@ realpath(const char * restrict path, char * restrict resolved)
     struct stat st;
     if (stat(path, &st) < 0)
         return NULL;
-    struct __msdos_regs r = { .ax = 0x6000, .si = __MSDOS_OFF(path),
+    struct __msdos_regs r = { .ax = 0x6000,
+                              .si = __MSDOS_OFF(path),
                               .ds = __MSDOS_SEG(path),
                               .di = __MSDOS_OFF(full),
                               .es = __MSDOS_SEG(full) };

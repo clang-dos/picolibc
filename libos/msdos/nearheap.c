@@ -112,9 +112,7 @@ _nrealloc(void __near *p, size_t n)
         _nfree(p);
         return NULL;
     }
-    uint16_t h = n > 0xffe0u ? 0
-                             : LocalReAlloc((uint16_t)p, n,
-                                            2 /* LMEM_MOVEABLE */);
+    uint16_t h = n > 0xffe0u ? 0 : LocalReAlloc((uint16_t)p, n, 2 /* LMEM_MOVEABLE */);
     if (!h)
         errno = ENOMEM;
     return (void __near *)h;
@@ -125,7 +123,7 @@ _nrealloc(void __near *p, size_t n)
 #define ARENA_Q __near
 #include "arena.h"
 
-extern char __near __msdos_near_heap[];
+extern char __near  __msdos_near_heap[];
 extern const size_t __msdos_near_heap_size;
 
 static char __near *
@@ -142,7 +140,7 @@ heap(void)
 void __near *
 _nmalloc(size_t n)
 {
-    uint16_t need = arena_need(n);
+    uint16_t     need = arena_need(n);
     char __near *a = heap();
     void __near *p = need && a ? arena_alloc(a, need) : NULL;
     if (!p)

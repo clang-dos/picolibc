@@ -41,26 +41,56 @@ __msdos_error(uint16_t code)
 {
     int e;
     switch (code) {
-    case 0x01: e = ENOSYS; break;  /* invalid function */
-    case 0x02:                     /* file not found */
-    case 0x03:                     /* path not found */
-    case 0x0f:                     /* invalid drive */
-    case 0x12: e = ENOENT; break;  /* no more files */
-    case 0x04: e = EMFILE; break;  /* too many open files */
-    case 0x05: e = EACCES; break;  /* access denied */
-    case 0x06: e = EBADF; break;   /* invalid handle */
-    case 0x07:                     /* memory control blocks destroyed */
-    case 0x08: e = ENOMEM; break;  /* insufficient memory */
-    case 0x0c: e = EINVAL; break;  /* invalid access code */
-    case 0x10: e = EBUSY; break;   /* attempt to remove current directory */
-    case 0x11: e = EXDEV; break;   /* not same device */
-    case 0x13: e = EROFS; break;   /* write-protected disk */
-    case 0x15: e = EAGAIN; break;  /* drive not ready */
-    case 0x20:                     /* sharing violation */
-    case 0x21: e = EBUSY; break;   /* lock violation */
-    case 0x27: e = ENOSPC; break;  /* disk full */
-    case 0x50: e = EEXIST; break;  /* file exists */
-    default: e = EIO; break;
+    case 0x01:
+        e = ENOSYS;
+        break; /* invalid function */
+    case 0x02: /* file not found */
+    case 0x03: /* path not found */
+    case 0x0f: /* invalid drive */
+    case 0x12:
+        e = ENOENT;
+        break; /* no more files */
+    case 0x04:
+        e = EMFILE;
+        break; /* too many open files */
+    case 0x05:
+        e = EACCES;
+        break; /* access denied */
+    case 0x06:
+        e = EBADF;
+        break; /* invalid handle */
+    case 0x07: /* memory control blocks destroyed */
+    case 0x08:
+        e = ENOMEM;
+        break; /* insufficient memory */
+    case 0x0c:
+        e = EINVAL;
+        break; /* invalid access code */
+    case 0x10:
+        e = EBUSY;
+        break; /* attempt to remove current directory */
+    case 0x11:
+        e = EXDEV;
+        break; /* not same device */
+    case 0x13:
+        e = EROFS;
+        break; /* write-protected disk */
+    case 0x15:
+        e = EAGAIN;
+        break; /* drive not ready */
+    case 0x20: /* sharing violation */
+    case 0x21:
+        e = EBUSY;
+        break; /* lock violation */
+    case 0x27:
+        e = ENOSPC;
+        break; /* disk full */
+    case 0x50:
+        e = EEXIST;
+        break; /* file exists */
+    default:
+        e = EIO;
+        break;
     }
     errno = e;
     return -1;

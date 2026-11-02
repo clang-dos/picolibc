@@ -33,7 +33,6 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /* Interrupt vectors and resident programs: _dos_getvect, _dos_setvect and
  * _dos_keep, as in Open Watcom and Microsoft C. */
 
@@ -42,7 +41,7 @@
 
 #ifndef __WINDOWS__
 
-typedef void (__interrupt __far *intr_handler)();
+typedef void(__interrupt __far *intr_handler)();
 
 intr_handler
 _dos_getvect(unsigned intno)
@@ -90,8 +89,7 @@ _dos_keep(unsigned retcode, unsigned memsize)
 {
     if (memsize == 0)
         memsize = heap_end_para() - __msdos_psp;
-    struct __msdos_regs r = { .ax = 0x3100 | (retcode & 0xff),
-                              .dx = memsize };
+    struct __msdos_regs r = { .ax = 0x3100 | (retcode & 0xff), .dx = memsize };
     __msdos_int21(&r);
     for (;;)
         ;

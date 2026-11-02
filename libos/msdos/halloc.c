@@ -63,7 +63,7 @@ halloc(long n, size_t size)
     }
     /* The block starts zeroed, as with calloc. */
     for (uint16_t s = seg, left = paras; left;) {
-        uint16_t chunk = left > 0x800 ? 0x800 : left;
+        uint16_t        chunk = left > 0x800 ? 0x800 : left;
         uint16_t __far *w = (uint16_t __far *)((uint32_t)s << 16);
         for (uint16_t i = 0; i < chunk * 8u; i++)
             w[i] = 0;

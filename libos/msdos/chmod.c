@@ -42,8 +42,7 @@
 int
 chmod(const char *path, mode_t mode)
 {
-    struct __msdos_regs r = { .ax = 0x4300, .dx = __MSDOS_OFF(path),
-                              .ds = __MSDOS_SEG(path) };
+    struct __msdos_regs r = { .ax = 0x4300, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path) };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     uint16_t attr = r.cx & ~0x18; /* Not the volume and directory bits. */
@@ -51,9 +50,9 @@ chmod(const char *path, mode_t mode)
         attr &= ~0x01;
     else
         attr |= 0x01;
-    r = (struct __msdos_regs){ .ax = 0x4301, .cx = attr,
-                               .dx = __MSDOS_OFF(path),
-                               .ds = __MSDOS_SEG(path) };
+    r = (struct __msdos_regs) {
+        .ax = 0x4301, .cx = attr, .dx = __MSDOS_OFF(path), .ds = __MSDOS_SEG(path)
+    };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     return 0;
@@ -63,8 +62,7 @@ int
 fchmodat(int dirfd, const char *path, mode_t mode, int flags)
 {
     (void)flags;
-    if (dirfd != AT_FDCWD && path[0] != '/' && path[0] != '\\' &&
-        !(path[0] && path[1] == ':')) {
+    if (dirfd != AT_FDCWD && path[0] != '/' && path[0] != '\\' && !(path[0] && path[1] == ':')) {
         errno = ENOSYS;
         return -1;
     }

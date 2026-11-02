@@ -42,7 +42,7 @@
 uint16_t __win16_hinstance;
 uint16_t __win16_hprevinstance;
 uint16_t __win16_cmdshow;
-char __win16_cmdline[128];
+char     __win16_cmdline[128];
 
 /* The heap is one block from Windows that sbrk hands out: a fixed block of
  * the local heap in DGROUP with near data pointers, or a 64 KiB global
@@ -52,7 +52,7 @@ char __win16_cmdline[128];
 void
 __win16_init_heap(void)
 {
-    char *base = NULL;
+    char    *base = NULL;
     uint32_t size;
 #if defined(__COMPACT__) || defined(__LARGE__)
     for (size = 0xfff0; size >= 0x1000 && !base; size >>= 1) {
@@ -72,11 +72,11 @@ __win16_init_heap(void)
     __msdos_heap_end = base + size;
 }
 
-uint16_t __win16_heapsize;
-char __far *__win16_libcmdline;
+uint16_t        __win16_heapsize;
+char __far     *__win16_libcmdline;
 
-int __WIN16_API LibMain(uint16_t instance, uint16_t data_seg,
-                        uint16_t heap_size, char __far *cmdline);
+int __WIN16_API LibMain(uint16_t instance, uint16_t data_seg, uint16_t heap_size,
+                        char __far *cmdline);
 
 /* Called by libentry.obj in a DLL, with BSS cleared and the local heap set
  * up. The stack is the caller's, so SS is not DS here. */
@@ -89,7 +89,6 @@ __win16_libstart(void)
 #ifdef __INIT_FINI_ARRAY
     __libc_init_array();
 #endif
-    return LibMain(__win16_hinstance, ds, __win16_heapsize,
-                   __win16_libcmdline);
+    return LibMain(__win16_hinstance, ds, __win16_heapsize, __win16_libcmdline);
 }
 #endif

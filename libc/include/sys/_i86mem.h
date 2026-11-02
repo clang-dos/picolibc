@@ -62,16 +62,17 @@
    to any pointer, on the plain function. */
 #if defined(__I86__) && !defined(__I86_NO_OVERLOADS)
 #ifdef __cplusplus
-#define __I86_OVERLOAD(ret, name, target, params, args, cond)       \
-    extern "C++" {                                                  \
-    inline ret(name) params                                         \
-        __attribute__((__always_inline__, cond))                    \
-    { return target args; }                                         \
+#define __I86_OVERLOAD(ret, name, target, params, args, cond)        \
+    extern "C++" {                                                   \
+    inline ret(name) params __attribute__((__always_inline__, cond)) \
+    {                                                                \
+        return target args;                                          \
+    }                                                                \
     }
 #else
-#define __I86_OVERLOAD(ret, name, target, params, args, cond)       \
-    ret(name) params __attribute__((__overloadable__, cond))        \
-        __asm__(__XSTRING(__USER_LABEL_PREFIX__) __XSTRING(target));
+#define __I86_OVERLOAD(ret, name, target, params, args, cond)         \
+    ret(name) params __attribute__((__overloadable__, cond)) __asm__( \
+        __XSTRING(__USER_LABEL_PREFIX__) __XSTRING(target));
 #endif
 /* An attribute that does nothing, for overloads without a condition. */
 #define __I86_ANY __unused__

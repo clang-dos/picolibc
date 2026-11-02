@@ -40,8 +40,7 @@
 
 #ifdef __WINDOWS__
 int __WIN16_API
-LibMain(uint16_t instance, uint16_t data_seg, uint16_t heap_size,
-        char __far *cmdline)
+LibMain(uint16_t instance, uint16_t data_seg, uint16_t heap_size, char __far *cmdline)
 {
     (void)instance;
     (void)data_seg;

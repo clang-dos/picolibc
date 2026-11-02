@@ -65,8 +65,8 @@ set_time(int fd, time_t t)
     int32_t yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
     int32_t doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
     int32_t mp = (5 * doy + 2) / 153;
-    int d = doy - (153 * mp + 2) / 5 + 1;
-    int m = mp < 10 ? mp + 3 : mp - 9;
+    int     d = doy - (153 * mp + 2) / 5 + 1;
+    int     m = mp < 10 ? mp + 3 : mp - 9;
     int32_t y = yoe + era * 400 + (m <= 2);
     if (y > 2107) {
         errno = EINVAL;
@@ -74,8 +74,7 @@ set_time(int fd, time_t t)
     }
     uint16_t date = ((y - 1980) << 9) | (m << 5) | d;
     uint16_t time = ((secs / 3600) << 11) | (((secs / 60) % 60) << 5) | ((secs % 60) / 2);
-    struct __msdos_regs r = { .ax = 0x5701, .bx = (uint16_t)fd, .cx = time,
-                              .dx = date };
+    struct __msdos_regs r = { .ax = 0x5701, .bx = (uint16_t)fd, .cx = time, .dx = date };
     if (__msdos_int21(&r))
         return __msdos_error(r.ax);
     return 0;
@@ -84,7 +83,7 @@ set_time(int fd, time_t t)
 static time_t
 now(void)
 {
-    int64_t sec;
+    int64_t  sec;
     uint16_t centi;
     __msdos_time(&sec, &centi);
     return sec;
@@ -115,15 +114,14 @@ int
 utimensat(int dirfd, const char *path, const struct timespec times[2], int flags)
 {
     (void)flags;
-    if (dirfd != AT_FDCWD && path[0] != '/' && path[0] != '\\' &&
-        !(path[0] && path[1] == ':')) {
+    if (dirfd != AT_FDCWD && path[0] != '/' && path[0] != '\\' && !(path[0] && path[1] == ':')) {
         errno = ENOSYS;
         return -1;
     }
     if (times != NULL && times[1].tv_nsec == UTIME_OMIT)
         return access(path, F_OK);
-    return set_path_time(path, times == NULL || times[1].tv_nsec == UTIME_NOW
-                                   ? now() : times[1].tv_sec);
+    return set_path_time(path,
+                         times == NULL || times[1].tv_nsec == UTIME_NOW ? now() : times[1].tv_sec);
 }
 
 int

@@ -37,12 +37,11 @@
  * program sets another size with _NEAR_HEAP_SIZE(bytes) from <malloc.h>
  * in one of its files, which defines these two instead. */
 
-#if !defined(__WINDOWS__) && (defined(__COMPACT__) || defined(__LARGE__) || \
-                              defined(__HUGE__))
+#if !defined(__WINDOWS__) && (defined(__COMPACT__) || defined(__LARGE__) || defined(__HUGE__))
 
 #include <stddef.h>
 
-char __near        __msdos_near_heap[4096];
+char __near  __msdos_near_heap[4096];
 const size_t __msdos_near_heap_size = sizeof(__msdos_near_heap);
 
 #endif
