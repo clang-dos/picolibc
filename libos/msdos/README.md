@@ -154,6 +154,43 @@ and Microsoft C have for interrupt handlers and TSRs, for DOS programs:
   `_enable()` are CLI and STI; `MK_FP`, `FP_SEG` and `FP_OFF` make and
   split far pointers. `_psp` is the PSP segment.
 
+## The console and Turbo C helpers
+
+`<conio.h>` (in `libc/machine/i8086`) has the text console functions of
+Turbo C and Microsoft C, for DOS programs:
+
+- `conio.c` keeps the text window, the attribute and the cursor in
+  `struct __conio` (`conio-local.h`), which it reads from the BIOS data
+  area on first use and after `textmode`. Output (`putch`, `cputs`,
+  `clrscr`, `clreol`, `insline`, `delline`) writes straight to video
+  memory at B800h (B000h in mode 7), wraps at the window's edge and
+  scrolls the window unless `_wscroll` is 0; it moves the BIOS cursor to
+  match after each call. `\a`, `\b`, `\r` and `\n` act as on a terminal.
+- `cprintf.c` has `cprintf` and `vcprintf`, through a tinystdio stream
+  (`FDEV_SETUP_STREAM`) that writes with `putch`.
+- `context.c` has `gettextinfo`, `textmode` (`C4350` loads the 8x8 font
+  for 43 or 50 lines), `_setcursortype`, `gettext`, `puttext` and
+  `movetext`.
+- `conin.c` reads the keyboard with INT 21h function 07h (`getch`,
+  without echo or Ctrl+C checks; extended keys come as 0 and the scan
+  code) and 0Bh (`kbhit`), and has `ungetch`, `cgets`, `cscanf` and the
+  line editing of `getpass`, which `getpass.c` uses in place of the POSIX
+  one so the password is read from the console without echo.
+
+`<i86.h>` and `<dos.h>` also have:
+
+- `int86`, `int86x`, `intdos`, `intdosx` and `segread` (`int86.c`) with
+  `union REGS` and `struct SREGS`. They call `__msdos_intr` (`intr.S`),
+  which loads the registers from a block, calls the interrupt through its
+  vector with an IRET frame (so any interrupt number works without
+  self-modifying code), and stores the registers and flags back.
+- `delay(ms)` (`delay.c`) counts down the PIT's channel 0, so it is
+  accurate to the millisecond without calibration; `sound(hz)` and
+  `nosound()` drive the speaker through channel 2.
+- `inportb`, `inport`, `outportb`, `outport`, `peek`, `peekb`, `poke`,
+  `pokeb`, `getvect`, `setvect`, `disable` and `enable`, the Turbo C names
+  of the port, memory and interrupt helpers.
+
 ## 16-bit Windows
 
 The same code builds for `i8086-pc-win16` (the cross files
