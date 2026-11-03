@@ -1,0 +1,17 @@
+# Atari TOS (TOS 1.0 to 4.x, EmuTOS) on the 68000 and later, built with the
+# clang-dos LLVM toolchain (https://github.com/clang-dos/llvm). Programs are
+# ELF objects that the driver links with ld.lld and converts to PRG files.
+[binaries]
+c = ['clang', '--target=m68k-atari-tos', '-mcpu=68000', '-nostdlib']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'tos'
+cpu_family = 'm68k'
+cpu = '68000'
+endian = 'big'
+
+[properties]
+skip_sanity_check = true
