@@ -44,6 +44,19 @@ srcs_machine = [
   'tls.c',
 ]
 
+# LLVM's assembler reads only the Motorola syntax, not the MIT syntax of
+# the assembly here: clang builds get a setjmp of their own and the
+# generic C string functions.
+if cc.get_id() == 'clang'
+  srcs_machine = [
+    'interrupt.c',
+    'read_tp.S',
+    'set_tls.c',
+    'setjmp-clang.S',
+    'tls.c',
+  ]
+endif
+
 subdir('machine')
 
 foreach params : targets

@@ -54,4 +54,8 @@ if get_option('os-msdos')
   subdir('msdos')
 endif
 
+if get_option('os-amigaos')
+  subdir('amigaos')
+endif
+
 subdir('dummyhost')
