@@ -43,7 +43,7 @@
 int
 unlink(const char *path)
 {
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;
@@ -54,7 +54,7 @@ unlink(const char *path)
 int
 rmdir(const char *path)
 {
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;
@@ -74,7 +74,7 @@ rmdir(const char *path)
 int
 rename(const char *from, const char *to)
 {
-    char fbuf[__TOS_PATH_MAX], tbuf[__TOS_PATH_MAX];
+    char  fbuf[__TOS_PATH_MAX], tbuf[__TOS_PATH_MAX];
     char *f = __tos_path(from, fbuf), *t = __tos_path(to, tbuf);
     if (!f || !t)
         return -1;
@@ -90,7 +90,7 @@ int
 mkdir(const char *path, mode_t mode)
 {
     (void)mode;
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;
@@ -106,7 +106,7 @@ mkdir(const char *path, mode_t mode)
 int
 chdir(const char *path)
 {
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;

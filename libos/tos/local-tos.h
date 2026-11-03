@@ -56,148 +56,147 @@
 
 #define __TOS_CLOBBERS "d1", "d2", "a0", "a1", "a2", "cc", "memory"
 
-#define __TOS_V(t, n)                                                     \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        __asm__ volatile("move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (2,%%sp),%%sp"                                 \
-                         : "=r"(__r)                                      \
-                         :                                                \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_V(t, n)                                 \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        __asm__ volatile("move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (2,%%sp),%%sp"          \
+                         : "=r"(__r)                  \
+                         :                            \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_W(t, n, a)                                                  \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        short         __a = (short)(a);                                   \
-        __asm__ volatile("move.w %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (4,%%sp),%%sp"                                 \
-                         : "=r"(__r)                                      \
-                         : "d"(__a)                                       \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_W(t, n, a)                              \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        short         __a = (short)(a);               \
+        __asm__ volatile("move.w %1,-(%%sp)\n\t"      \
+                         "move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (4,%%sp),%%sp"          \
+                         : "=r"(__r)                  \
+                         : "d"(__a)                   \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_L(t, n, a)                                                  \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        long          __a = (long)(a);                                    \
-        __asm__ volatile("move.l %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (6,%%sp),%%sp"                                 \
-                         : "=r"(__r)                                      \
-                         : "r"(__a)                                       \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_L(t, n, a)                              \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        long          __a = (long)(a);                \
+        __asm__ volatile("move.l %1,-(%%sp)\n\t"      \
+                         "move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (6,%%sp),%%sp"          \
+                         : "=r"(__r)                  \
+                         : "r"(__a)                   \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_WW(t, n, a, b)                                              \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        short         __a = (short)(a);                                   \
-        short         __b = (short)(b);                                   \
-        __asm__ volatile("move.w %2,-(%%sp)\n\t"                          \
-                         "move.w %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (6,%%sp),%%sp"                                 \
-                         : "=r"(__r)                                      \
-                         : "d"(__a), "d"(__b)                             \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_WW(t, n, a, b)                          \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        short         __a = (short)(a);               \
+        short         __b = (short)(b);               \
+        __asm__ volatile("move.w %2,-(%%sp)\n\t"      \
+                         "move.w %1,-(%%sp)\n\t"      \
+                         "move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (6,%%sp),%%sp"          \
+                         : "=r"(__r)                  \
+                         : "d"(__a), "d"(__b)         \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_LW(t, n, a, b)                                              \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        long          __a = (long)(a);                                    \
-        short         __b = (short)(b);                                   \
-        __asm__ volatile("move.w %2,-(%%sp)\n\t"                          \
-                         "move.l %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (8,%%sp),%%sp"                                 \
-                         : "=r"(__r)                                      \
-                         : "r"(__a), "d"(__b)                             \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_LW(t, n, a, b)                          \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        long          __a = (long)(a);                \
+        short         __b = (short)(b);               \
+        __asm__ volatile("move.w %2,-(%%sp)\n\t"      \
+                         "move.l %1,-(%%sp)\n\t"      \
+                         "move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (8,%%sp),%%sp"          \
+                         : "=r"(__r)                  \
+                         : "r"(__a), "d"(__b)         \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_LWW(t, n, a, b, c)                                          \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        long          __a = (long)(a);                                    \
-        short         __b = (short)(b);                                   \
-        short         __c = (short)(c);                                   \
-        __asm__ volatile("move.w %3,-(%%sp)\n\t"                          \
-                         "move.w %2,-(%%sp)\n\t"                          \
-                         "move.l %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (10,%%sp),%%sp"                             \
-                         : "=r"(__r)                                      \
-                         : "r"(__a), "d"(__b), "d"(__c)                   \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_LWW(t, n, a, b, c)                        \
+    ({                                                  \
+        register long __r __asm__("d0");                \
+        long          __a = (long)(a);                  \
+        short         __b = (short)(b);                 \
+        short         __c = (short)(c);                 \
+        __asm__ volatile("move.w %3,-(%%sp)\n\t"        \
+                         "move.w %2,-(%%sp)\n\t"        \
+                         "move.l %1,-(%%sp)\n\t"        \
+                         "move.w #" #n ",-(%%sp)\n\t"   \
+                         "trap #" #t "\n\t"             \
+                         "lea (10,%%sp),%%sp"           \
+                         : "=r"(__r)                    \
+                         : "r"(__a), "d"(__b), "d"(__c) \
+                         : __TOS_CLOBBERS);             \
+        __r;                                            \
     })
 
-#define __TOS_WLL(t, n, a, b, c)                                          \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        short         __a = (short)(a);                                   \
-        long          __b = (long)(b);                                    \
-        long          __c = (long)(c);                                    \
-        __asm__ volatile("move.l %3,-(%%sp)\n\t"                          \
-                         "move.l %2,-(%%sp)\n\t"                          \
-                         "move.w %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (12,%%sp),%%sp"                             \
-                         : "=r"(__r)                                      \
-                         : "d"(__a), "r"(__b), "r"(__c)                   \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_WLL(t, n, a, b, c)                        \
+    ({                                                  \
+        register long __r __asm__("d0");                \
+        short         __a = (short)(a);                 \
+        long          __b = (long)(b);                  \
+        long          __c = (long)(c);                  \
+        __asm__ volatile("move.l %3,-(%%sp)\n\t"        \
+                         "move.l %2,-(%%sp)\n\t"        \
+                         "move.w %1,-(%%sp)\n\t"        \
+                         "move.w #" #n ",-(%%sp)\n\t"   \
+                         "trap #" #t "\n\t"             \
+                         "lea (12,%%sp),%%sp"           \
+                         : "=r"(__r)                    \
+                         : "d"(__a), "r"(__b), "r"(__c) \
+                         : __TOS_CLOBBERS);             \
+        __r;                                            \
     })
 
-#define __TOS_LL(t, n, a, b)                                              \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        long          __a = (long)(a);                                    \
-        long          __b = (long)(b);                                    \
-        __asm__ volatile("move.l %2,-(%%sp)\n\t"                          \
-                         "move.l %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (10,%%sp),%%sp"                             \
-                         : "=r"(__r)                                      \
-                         : "r"(__a), "r"(__b)                             \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_LL(t, n, a, b)                          \
+    ({                                                \
+        register long __r __asm__("d0");              \
+        long          __a = (long)(a);                \
+        long          __b = (long)(b);                \
+        __asm__ volatile("move.l %2,-(%%sp)\n\t"      \
+                         "move.l %1,-(%%sp)\n\t"      \
+                         "move.w #" #n ",-(%%sp)\n\t" \
+                         "trap #" #t "\n\t"           \
+                         "lea (10,%%sp),%%sp"         \
+                         : "=r"(__r)                  \
+                         : "r"(__a), "r"(__b)         \
+                         : __TOS_CLOBBERS);           \
+        __r;                                          \
     })
 
-#define __TOS_WLW(t, n, a, b, c)                                          \
-    ({                                                                    \
-        register long __r __asm__("d0");                                  \
-        short         __a = (short)(a);                                   \
-        long          __b = (long)(b);                                    \
-        short         __c = (short)(c);                                   \
-        __asm__ volatile("move.w %3,-(%%sp)\n\t"                          \
-                         "move.l %2,-(%%sp)\n\t"                          \
-                         "move.w %1,-(%%sp)\n\t"                          \
-                         "move.w #" #n ",-(%%sp)\n\t"                     \
-                         "trap #" #t "\n\t"                               \
-                         "lea (10,%%sp),%%sp"                             \
-                         : "=r"(__r)                                      \
-                         : "d"(__a), "r"(__b), "d"(__c)                   \
-                         : __TOS_CLOBBERS);                               \
-        __r;                                                              \
+#define __TOS_WLW(t, n, a, b, c)                        \
+    ({                                                  \
+        register long __r __asm__("d0");                \
+        short         __a = (short)(a);                 \
+        long          __b = (long)(b);                  \
+        short         __c = (short)(c);                 \
+        __asm__ volatile("move.w %3,-(%%sp)\n\t"        \
+                         "move.l %2,-(%%sp)\n\t"        \
+                         "move.w %1,-(%%sp)\n\t"        \
+                         "move.w #" #n ",-(%%sp)\n\t"   \
+                         "trap #" #t "\n\t"             \
+                         "lea (10,%%sp),%%sp"           \
+                         : "=r"(__r)                    \
+                         : "d"(__a), "r"(__b), "d"(__c) \
+                         : __TOS_CLOBBERS);             \
+        __r;                                            \
     })
-
 
 /* GEMDOS */
 #define __tos_Pterm0()               __TOS_V(1, 0x00)
@@ -232,13 +231,13 @@
 #define __tos_Fdatime(t, h, set)     __TOS_LWW(1, 0x57, t, h, set)
 
 /* XBIOS */
-#define __tos_Supexec(fn)            __TOS_L(14, 38, fn)
+#define __tos_Supexec(fn) __TOS_L(14, 38, fn)
 
 /* GEMDOS error codes. */
-#define __TOS_EFILNF  (-33) /* file not found */
-#define __TOS_EPTHNF  (-34) /* path not found */
-#define __TOS_EACCDN  (-36) /* access denied */
-#define __TOS_ENMFIL  (-49) /* no more files */
+#define __TOS_EFILNF (-33) /* file not found */
+#define __TOS_EPTHNF (-34) /* path not found */
+#define __TOS_EACCDN (-36) /* access denied */
+#define __TOS_ENMFIL (-49) /* no more files */
 
 /* File attributes. */
 #define __TOS_FA_RDONLY 0x01
@@ -260,26 +259,26 @@ struct __tos_dta {
 
 /* The basepage GEMDOS builds in front of each program. */
 struct __tos_basepage {
-    char          *p_lowtpa;
-    char          *p_hitpa;
-    char          *p_tbase;
-    long           p_tlen;
-    char          *p_dbase;
-    long           p_dlen;
-    char          *p_bbase;
-    long           p_blen;
-    char          *p_dta;
+    char                  *p_lowtpa;
+    char                  *p_hitpa;
+    char                  *p_tbase;
+    long                   p_tlen;
+    char                  *p_dbase;
+    long                   p_dlen;
+    char                  *p_bbase;
+    long                   p_blen;
+    char                  *p_dta;
     struct __tos_basepage *p_parent;
-    long           p_reserved;
-    char          *p_env;
-    char           p_undef[80];
-    unsigned char  p_cmdlin[128];
+    long                   p_reserved;
+    char                  *p_env;
+    char                   p_undef[80];
+    unsigned char          p_cmdlin[128];
 };
 
 extern struct __tos_basepage *_base;
 
 /* Set errno from a negative GEMDOS error code and return -1. */
-int  __tos_error(long code);
+int                           __tos_error(long code);
 
 /* A GEMDOS path for a C path: forward slashes become backslashes. Returns
  * NULL with errno ENAMETOOLONG when it doesn't fit. */
@@ -301,15 +300,15 @@ struct __tos_fd {
 extern struct __tos_fd __tos_fds[__TOS_MAX_FD];
 
 /* The fd's entry, or NULL with errno EBADF. */
-struct __tos_fd *__tos_fd(int fd);
-int              __tos_new_fd(short handle, int flags);
-int              __tos_is_tty(struct __tos_fd *f);
-void             __tos_close_fds(void);
+struct __tos_fd       *__tos_fd(int fd);
+int                    __tos_new_fd(short handle, int flags);
+int                    __tos_is_tty(struct __tos_fd *f);
+void                   __tos_close_fds(void);
 
 /* Seconds since 1970 for a GEMDOS date and time (local time, taken as
  * UTC). */
-int64_t __tos_unix_time(unsigned date, unsigned time);
+int64_t                __tos_unix_time(unsigned date, unsigned time);
 /* The 200 Hz system timer. */
-unsigned long __tos_hz200(void);
+unsigned long          __tos_hz200(void);
 
 #endif /* _LOCAL_TOS_H_ */

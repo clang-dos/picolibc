@@ -65,7 +65,7 @@ is_root(const char *name)
 int
 stat(const char *path, struct stat *st)
 {
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;
@@ -84,7 +84,8 @@ stat(const char *path, struct stat *st)
     struct __tos_dta dta;
     void            *old = (void *)__tos_Fgetdta();
     __tos_Fsetdta(&dta);
-    long r = __tos_Fsfirst(name, __TOS_FA_RDONLY | __TOS_FA_HIDDEN | __TOS_FA_SYSTEM | __TOS_FA_DIR);
+    long r
+        = __tos_Fsfirst(name, __TOS_FA_RDONLY | __TOS_FA_HIDDEN | __TOS_FA_SYSTEM | __TOS_FA_DIR);
     __tos_Fsetdta(old);
     if (r < 0)
         return __tos_error(r);

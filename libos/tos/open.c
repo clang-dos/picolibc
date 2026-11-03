@@ -41,7 +41,7 @@
 int
 open(const char *path, int flags, ...)
 {
-    char buf[__TOS_PATH_MAX];
+    char  buf[__TOS_PATH_MAX];
     char *name = __tos_path(path, buf);
     if (!name)
         return -1;

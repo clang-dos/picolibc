@@ -41,8 +41,8 @@
  * GEMDOS handle 2 is the serial port, so fd 2, the standard error, is
  * the console device (handle -1). */
 struct __tos_fd __tos_fds[__TOS_MAX_FD] = {
-    { 0, __TOS_FD_OPEN },
-    { 1, __TOS_FD_OPEN },
+    { 0,  __TOS_FD_OPEN                },
+    { 1,  __TOS_FD_OPEN                },
     { -1, __TOS_FD_OPEN | __TOS_FD_TTY },
 };
 
@@ -80,7 +80,7 @@ __tos_is_tty(struct __tos_fd *f)
         return 1;
     if (f->flags & __TOS_FD_NOTTY)
         return 0;
-    int  tty = f->handle < 0;
+    int tty = f->handle < 0;
     if (!tty) {
         long pos = __tos_Fseek(0L, f->handle, SEEK_CUR);
         if (pos == 0 && __tos_Fseek(1L, f->handle, SEEK_CUR) == 0)

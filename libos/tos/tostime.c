@@ -82,12 +82,12 @@ __tos_hz200(void)
 static void
 now(int64_t *sec, long *nsec)
 {
-    static int64_t last_sec = -1;
+    static int64_t       last_sec = -1;
     static unsigned long last_hz;
-    unsigned       date = (unsigned)__tos_Tgetdate();
-    unsigned       time = (unsigned)__tos_Tgettime();
-    unsigned long  hz = __tos_hz200();
-    int64_t        s = __tos_unix_time(date, time);
+    unsigned             date = (unsigned)__tos_Tgetdate();
+    unsigned             time = (unsigned)__tos_Tgettime();
+    unsigned long        hz = __tos_hz200();
+    int64_t              s = __tos_unix_time(date, time);
     if (s != last_sec) {
         last_sec = s;
         last_hz = hz;
