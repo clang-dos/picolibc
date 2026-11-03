@@ -58,4 +58,8 @@ if get_option('os-amigaos')
   subdir('amigaos')
 endif
 
+if get_option('os-tos')
+  subdir('tos')
+endif
+
 subdir('dummyhost')
