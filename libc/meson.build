@@ -75,6 +75,7 @@ endif
 
 # The DOS layer is part of libc itself.
 src_cpart += get_variable('src_os_msdos', [])
+src_cpart += get_variable('src_os_amigaos', [])
 
 subdir('include')
 
