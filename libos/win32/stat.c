@@ -72,7 +72,7 @@ is_program(const char *name)
     const char *dot = strrchr(name, '.');
     if (!dot || strchr(dot, '\\') || strchr(dot, '/'))
         return 0;
-    static const char *const ext[] = { ".exe", ".com", ".bat", ".cmd" };
+    static const char * const ext[] = { ".exe", ".com", ".bat", ".cmd" };
     for (size_t i = 0; i < sizeof(ext) / sizeof(ext[0]); i++)
         if (!strcasecmp(dot, ext[i]))
             return 1;
@@ -127,8 +127,8 @@ is_root(const char *full)
 int
 stat(const char * restrict path, struct stat * restrict st)
 {
-    char   full[1024];
-    char  *file;
+    char  full[1024];
+    char *file;
     if (!path[0] || strpbrk(path, "*?")) {
         errno = ENOENT;
         return -1;

@@ -46,8 +46,8 @@
  */
 
 struct thread_dtor {
-    void               (*dtor)(void *);
-    void                *obj;
+    void                (*dtor)(void *);
+    void               *obj;
     struct thread_dtor *next;
 };
 
@@ -97,6 +97,7 @@ thread_detach(void *module, __win32_dword reason, void *reserved)
 
 /* Before the TlsAlloc key destructors in .CRT$XLD, which std::
  * notify_all_at_thread_exit and the like use. */
-static void(__attribute__((__stdcall__)) * const thread_dtor_callback)(void *, __win32_dword, void *)
+static void(__attribute__((__stdcall__)) * const thread_dtor_callback)(void *, __win32_dword,
+                                                                       void *)
     __attribute__((__section__(".CRT$XLC"), __used__))
     = thread_detach;

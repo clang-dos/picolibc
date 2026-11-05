@@ -113,83 +113,81 @@ struct __win32_critical_section {
     uintptr_t      spin_count;
 };
 
-#define __WIN32_STD_INPUT_HANDLE        ((__win32_dword)-10)
-#define __WIN32_STD_OUTPUT_HANDLE       ((__win32_dword)-11)
-#define __WIN32_STD_ERROR_HANDLE        ((__win32_dword)-12)
+#define __WIN32_STD_INPUT_HANDLE           ((__win32_dword) - 10)
+#define __WIN32_STD_OUTPUT_HANDLE          ((__win32_dword) - 11)
+#define __WIN32_STD_ERROR_HANDLE           ((__win32_dword) - 12)
 
-#define __WIN32_GENERIC_READ            0x80000000UL
-#define __WIN32_GENERIC_WRITE           0x40000000UL
-#define __WIN32_FILE_SHARE_READ         0x00000001UL
-#define __WIN32_FILE_SHARE_WRITE        0x00000002UL
-#define __WIN32_FILE_SHARE_DELETE       0x00000004UL
-#define __WIN32_CREATE_NEW              1
-#define __WIN32_CREATE_ALWAYS           2
-#define __WIN32_OPEN_EXISTING           3
-#define __WIN32_OPEN_ALWAYS             4
-#define __WIN32_TRUNCATE_EXISTING       5
-#define __WIN32_FILE_ATTRIBUTE_READONLY 0x00000001UL
-#define __WIN32_FILE_ATTRIBUTE_HIDDEN   0x00000002UL
-#define __WIN32_FILE_ATTRIBUTE_SYSTEM   0x00000004UL
-#define __WIN32_FILE_ATTRIBUTE_DIR      0x00000010UL
-#define __WIN32_FILE_ATTRIBUTE_NORMAL   0x00000080UL
-#define __WIN32_FILE_ATTRIBUTE_REPARSE  0x00000400UL
-#define __WIN32_INVALID_FILE_ATTRIBUTES ((__win32_dword)-1)
+#define __WIN32_GENERIC_READ               0x80000000UL
+#define __WIN32_GENERIC_WRITE              0x40000000UL
+#define __WIN32_FILE_SHARE_READ            0x00000001UL
+#define __WIN32_FILE_SHARE_WRITE           0x00000002UL
+#define __WIN32_FILE_SHARE_DELETE          0x00000004UL
+#define __WIN32_CREATE_NEW                 1
+#define __WIN32_CREATE_ALWAYS              2
+#define __WIN32_OPEN_EXISTING              3
+#define __WIN32_OPEN_ALWAYS                4
+#define __WIN32_TRUNCATE_EXISTING          5
+#define __WIN32_FILE_ATTRIBUTE_READONLY    0x00000001UL
+#define __WIN32_FILE_ATTRIBUTE_HIDDEN      0x00000002UL
+#define __WIN32_FILE_ATTRIBUTE_SYSTEM      0x00000004UL
+#define __WIN32_FILE_ATTRIBUTE_DIR         0x00000010UL
+#define __WIN32_FILE_ATTRIBUTE_NORMAL      0x00000080UL
+#define __WIN32_FILE_ATTRIBUTE_REPARSE     0x00000400UL
+#define __WIN32_INVALID_FILE_ATTRIBUTES    ((__win32_dword) - 1)
 #define __WIN32_FILE_FLAG_BACKUP_SEMANTICS 0x02000000UL
 
-#define __WIN32_FILE_BEGIN              0
-#define __WIN32_FILE_CURRENT            1
-#define __WIN32_FILE_END                2
-#define __WIN32_INVALID_SET_FILE_POINTER ((__win32_dword)-1)
+#define __WIN32_FILE_BEGIN                 0
+#define __WIN32_FILE_CURRENT               1
+#define __WIN32_FILE_END                   2
+#define __WIN32_INVALID_SET_FILE_POINTER   ((__win32_dword) - 1)
 
-#define __WIN32_FILE_TYPE_UNKNOWN       0
-#define __WIN32_FILE_TYPE_DISK          1
-#define __WIN32_FILE_TYPE_CHAR          2
-#define __WIN32_FILE_TYPE_PIPE          3
+#define __WIN32_FILE_TYPE_UNKNOWN          0
+#define __WIN32_FILE_TYPE_DISK             1
+#define __WIN32_FILE_TYPE_CHAR             2
+#define __WIN32_FILE_TYPE_PIPE             3
 
-#define __WIN32_HEAP_ZERO_MEMORY        0x00000008UL
+#define __WIN32_HEAP_ZERO_MEMORY           0x00000008UL
 
-#define __WIN32_DUPLICATE_SAME_ACCESS   0x00000002UL
-#define __WIN32_STARTF_USESHOWWINDOW    0x00000001UL
-#define __WIN32_STARTF_USESTDHANDLES    0x00000100UL
-#define __WIN32_SW_SHOWDEFAULT          10
-#define __WIN32_INFINITE                0xffffffffUL
-#define __WIN32_HANDLE_FLAG_INHERIT     0x00000001UL
+#define __WIN32_DUPLICATE_SAME_ACCESS      0x00000002UL
+#define __WIN32_STARTF_USESHOWWINDOW       0x00000001UL
+#define __WIN32_STARTF_USESTDHANDLES       0x00000100UL
+#define __WIN32_SW_SHOWDEFAULT             10
+#define __WIN32_INFINITE                   0xffffffffUL
+#define __WIN32_HANDLE_FLAG_INHERIT        0x00000001UL
 
-#define __WIN32_ERROR_FILE_NOT_FOUND    2
-#define __WIN32_ERROR_NO_MORE_FILES     18
-#define __WIN32_ERROR_HANDLE_EOF        38
-#define __WIN32_ERROR_BROKEN_PIPE       109
+#define __WIN32_ERROR_FILE_NOT_FOUND       2
+#define __WIN32_ERROR_NO_MORE_FILES        18
+#define __WIN32_ERROR_HANDLE_EOF           38
+#define __WIN32_ERROR_BROKEN_PIPE          109
 #define __WIN32_ERROR_CALL_NOT_IMPLEMENTED 120
-#define __WIN32_CP_ACP                  0
-#define __WIN32_ERROR_ALREADY_EXISTS    183
+#define __WIN32_CP_ACP                     0
+#define __WIN32_ERROR_ALREADY_EXISTS       183
 
 /* For stdio: whether a descriptor translates line ends. */
-int __win32_is_text(int fd);
+int                        __win32_is_text(int fd);
 
 __WIN32_API __win32_handle GetStdHandle(__win32_dword which);
 __WIN32_API __win32_bool   SetStdHandle(__win32_dword which, __win32_handle h);
-__WIN32_API __win32_handle CreateFileA(const char *name, __win32_dword access,
-                                       __win32_dword share, void *security,
-                                       __win32_dword disposition, __win32_dword flags,
-                                       __win32_handle template_file);
+__WIN32_API __win32_handle CreateFileA(const char *name, __win32_dword access, __win32_dword share,
+                                       void *security, __win32_dword disposition,
+                                       __win32_dword flags, __win32_handle template_file);
 __WIN32_API __win32_dword  GetVersion(void);
-__WIN32_API int            WideCharToMultiByte(unsigned int codepage, __win32_dword flags,
-                                               const wchar_t *wide, int nwide, char *multi,
-                                               int nmulti, const char *defchar,
-                                               __win32_bool *useddef);
-__WIN32_API __win32_handle CreateThread(void *security, __win32_dword stack,
+__WIN32_API int WideCharToMultiByte(unsigned int codepage, __win32_dword flags, const wchar_t *wide,
+                                    int nwide, char *multi, int nmulti, const char *defchar,
+                                    __win32_bool *useddef);
+__WIN32_API __win32_handle CreateThread(void *security, __win32_dword                  stack,
                                         __win32_dword(__stdcall *start)(void *), void *arg,
                                         __win32_dword flags, __win32_dword *id);
 __WIN32_API void           ExitThread(__win32_dword status) __attribute__((__noreturn__));
-__WIN32_API __win32_bool   ReadFile(__win32_handle h, void *buf, __win32_dword n,
-                                    __win32_dword *done, void *overlapped);
-__WIN32_API __win32_bool   WriteFile(__win32_handle h, const void *buf, __win32_dword n,
-                                     __win32_dword *done, void *overlapped);
-__WIN32_API __win32_bool   CloseHandle(__win32_handle h);
+__WIN32_API __win32_bool ReadFile(__win32_handle h, void *buf, __win32_dword n, __win32_dword *done,
+                                  void *overlapped);
+__WIN32_API __win32_bool WriteFile(__win32_handle h, const void *buf, __win32_dword n,
+                                   __win32_dword *done, void *overlapped);
+__WIN32_API __win32_bool CloseHandle(__win32_handle h);
 __WIN32_API __win32_dword  SetFilePointer(__win32_handle h, long low, long *high,
                                           __win32_dword method);
 __WIN32_API __win32_dword  GetFileType(__win32_handle h);
-__WIN32_API __win32_bool   GetFileInformationByHandle(__win32_handle h,
+__WIN32_API __win32_bool   GetFileInformationByHandle(__win32_handle            h,
                                                       struct __win32_file_info *info);
 __WIN32_API __win32_bool   SetEndOfFile(__win32_handle h);
 __WIN32_API __win32_bool   FlushFileBuffers(__win32_handle h);
@@ -202,7 +200,7 @@ __WIN32_API __win32_bool   DuplicateHandle(__win32_handle from_process, __win32_
                                            __win32_dword options);
 __WIN32_API __win32_bool   CreatePipe(__win32_handle *read, __win32_handle *write,
                                       struct __win32_security_attributes *security,
-                                      __win32_dword size);
+                                      __win32_dword                       size);
 __WIN32_API __win32_handle GetCurrentProcess(void);
 __WIN32_API __win32_dword  GetCurrentProcessId(void);
 __WIN32_API __win32_dword  GetCurrentThreadId(void);
@@ -212,8 +210,7 @@ __WIN32_API void           ExitProcess(unsigned int status) __attribute__((__nor
 __WIN32_API char          *GetCommandLineA(void);
 __WIN32_API char          *GetEnvironmentStrings(void);
 __WIN32_API __win32_bool   SetEnvironmentVariableA(const char *name, const char *value);
-__WIN32_API __win32_dword  GetModuleFileNameA(__win32_handle module, char *name,
-                                              __win32_dword size);
+__WIN32_API __win32_dword GetModuleFileNameA(__win32_handle module, char *name, __win32_dword size);
 __WIN32_API __win32_handle GetModuleHandleA(const char *name);
 __WIN32_API void           GetStartupInfoA(struct __win32_startup_info *info);
 __WIN32_API __win32_handle LoadLibraryA(const char *name);
@@ -221,8 +218,7 @@ __WIN32_API void          *GetProcAddress(__win32_handle module, const char *nam
 
 __WIN32_API __win32_handle GetProcessHeap(void);
 __WIN32_API void          *HeapAlloc(__win32_handle heap, __win32_dword flags, size_t n);
-__WIN32_API void          *HeapReAlloc(__win32_handle heap, __win32_dword flags, void *p,
-                                       size_t n);
+__WIN32_API void          *HeapReAlloc(__win32_handle heap, __win32_dword flags, void *p, size_t n);
 __WIN32_API __win32_bool   HeapFree(__win32_handle heap, __win32_dword flags, void *p);
 __WIN32_API size_t         HeapSize(__win32_handle heap, __win32_dword flags, const void *p);
 
@@ -246,7 +242,7 @@ __WIN32_API __win32_bool   GetDiskFreeSpaceA(const char *root, __win32_dword *se
 
 __WIN32_API void           GetSystemTime(struct __win32_systemtime *t);
 __WIN32_API __win32_bool   SystemTimeToFileTime(const struct __win32_systemtime *t,
-                                                struct __win32_filetime *ft);
+                                                struct __win32_filetime         *ft);
 __WIN32_API __win32_dword  GetTickCount(void);
 __WIN32_API __win32_bool   QueryPerformanceCounter(int64_t *count);
 __WIN32_API __win32_bool   QueryPerformanceFrequency(int64_t *frequency);
@@ -262,15 +258,14 @@ __WIN32_API __win32_bool   CreateProcessA(const char *application, char *command
                                           struct __win32_security_attributes *process_security,
                                           struct __win32_security_attributes *thread_security,
                                           __win32_bool inherit, __win32_dword flags, void *env,
-                                          const char *directory,
-                                          struct __win32_startup_info *startup,
+                                          const char *directory, struct __win32_startup_info *startup,
                                           struct __win32_process_info *info);
 __WIN32_API __win32_dword  WaitForSingleObject(__win32_handle h, __win32_dword ms);
 __WIN32_API __win32_bool   GetExitCodeProcess(__win32_handle h, __win32_dword *status);
 
 /* Set errno from a Win32 error code (GetLastError() if code is 0) and
  * return -1. */
-int __win32_error(__win32_dword code);
+int                        __win32_error(__win32_dword code);
 
 /* Time: FILETIME counts 100 ns since 1601. */
 #define __WIN32_EPOCH_DIFF 116444736000000000LL /* 1601 to 1970 in 100 ns */

@@ -46,7 +46,7 @@
  * header that holds the distance from the start of the HeapAlloc block, so
  * that free() takes blocks from memalign and aligned_alloc too.
  */
-#define HDR      (alignof(max_align_t) > sizeof(size_t) ? alignof(max_align_t) : sizeof(size_t))
+#define HDR       (alignof(max_align_t) > sizeof(size_t) ? alignof(max_align_t) : sizeof(size_t))
 #define OFFSET(p) (((size_t *)(p))[-1])
 
 __win32_handle __win32_heap;

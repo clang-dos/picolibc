@@ -65,7 +65,10 @@ static int
 set_times(__win32_handle h, const struct timespec times[2])
 {
     struct __win32_filetime access, write;
-    struct timespec         now[2] = { { 0, UTIME_NOW }, { 0, UTIME_NOW } };
+    struct timespec         now[2] = {
+        { 0, UTIME_NOW },
+        { 0, UTIME_NOW }
+    };
     if (!times)
         times = now;
     int a = to_filetime(&times[0], &access);
@@ -108,8 +111,10 @@ utimes(const char *path, const struct timeval times[2])
 {
     if (!times)
         return utimensat(AT_FDCWD, path, NULL, 0);
-    struct timespec ts[2] = { { times[0].tv_sec, times[0].tv_usec * 1000 },
-                              { times[1].tv_sec, times[1].tv_usec * 1000 } };
+    struct timespec ts[2] = {
+        { times[0].tv_sec, times[0].tv_usec * 1000 },
+        { times[1].tv_sec, times[1].tv_usec * 1000 }
+    };
     return utimensat(AT_FDCWD, path, ts, 0);
 }
 
@@ -118,6 +123,9 @@ utime(const char *path, const struct utimbuf *times)
 {
     if (!times)
         return utimensat(AT_FDCWD, path, NULL, 0);
-    struct timespec ts[2] = { { times->actime, 0 }, { times->modtime, 0 } };
+    struct timespec ts[2] = {
+        { times->actime,  0 },
+        { times->modtime, 0 }
+    };
     return utimensat(AT_FDCWD, path, ts, 0);
 }

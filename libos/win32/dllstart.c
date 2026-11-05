@@ -53,8 +53,8 @@ void __call_exitprocs(int code, void *param);
 extern __win32_bool __attribute__((__stdcall__, __weak__))
 DllMain(__win32_handle module, __win32_dword reason, void *reserved);
 
-__win32_bool __attribute__((__stdcall__)) DllMainCRTStartup(__win32_handle module, __win32_dword reason,
-                                                            void *reserved);
+__win32_bool __attribute__((__stdcall__)) DllMainCRTStartup(__win32_handle module,
+                                                            __win32_dword reason, void *reserved);
 
 __win32_bool __attribute__((__stdcall__, __used__))
 DllMainCRTStartup(__win32_handle module, __win32_dword reason, void *reserved)

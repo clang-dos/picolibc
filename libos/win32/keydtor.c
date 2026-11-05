@@ -53,8 +53,8 @@ struct key_dtor {
 
 static struct key_dtor *key_dtors;
 
-int ___w64_mingwthr_add_key_dtor(__win32_dword key, void (*dtor)(void *));
-int ___w64_mingwthr_remove_key_dtor(__win32_dword key);
+int                     ___w64_mingwthr_add_key_dtor(__win32_dword key, void (*dtor)(void *));
+int                     ___w64_mingwthr_remove_key_dtor(__win32_dword key);
 
 int
 ___w64_mingwthr_add_key_dtor(__win32_dword key, void (*dtor)(void *))

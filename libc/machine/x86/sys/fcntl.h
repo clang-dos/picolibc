@@ -42,21 +42,21 @@
 
 /* Text and binary modes of the Windows C library. A file opened with
  * neither gets the mode in _fmode, which starts as O_TEXT. */
-#define _FTEXT    0x10000
-#define _FBINARY  0x20000
-#define O_TEXT    _FTEXT
-#define O_BINARY  _FBINARY
-#define _O_TEXT   O_TEXT
-#define _O_BINARY O_BINARY
-#define O_NOINHERIT _FNOINHERIT
+#define _FTEXT       0x10000
+#define _FBINARY     0x20000
+#define O_TEXT       _FTEXT
+#define O_BINARY     _FBINARY
+#define _O_TEXT      O_TEXT
+#define _O_BINARY    O_BINARY
+#define O_NOINHERIT  _FNOINHERIT
 #define _O_NOINHERIT O_NOINHERIT
-#define _O_RDONLY O_RDONLY
-#define _O_WRONLY O_WRONLY
-#define _O_RDWR   O_RDWR
-#define _O_APPEND O_APPEND
-#define _O_CREAT  O_CREAT
-#define _O_TRUNC  O_TRUNC
-#define _O_EXCL   O_EXCL
+#define _O_RDONLY    O_RDONLY
+#define _O_WRONLY    O_WRONLY
+#define _O_RDWR      O_RDWR
+#define _O_APPEND    O_APPEND
+#define _O_CREAT     O_CREAT
+#define _O_TRUNC     O_TRUNC
+#define _O_EXCL      O_EXCL
 
 _BEGIN_STD_C
 

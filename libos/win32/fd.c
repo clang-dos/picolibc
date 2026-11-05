@@ -41,7 +41,7 @@
 struct __win32_fd __win32_fds[__WIN32_MAX_FD];
 
 /* The mode for open() calls that give neither O_TEXT nor O_BINARY. */
-int _fmode = O_TEXT;
+int               _fmode = O_TEXT;
 
 int
 __win32_type_flags(__win32_handle h)
@@ -58,9 +58,8 @@ __win32_type_flags(__win32_handle h)
 
 /* stdin, stdout and stderr are the standard handles, in text mode. A GUI
  * program may have none; its descriptors 0 to 2 then stay closed. */
-static const __win32_dword std_handles[3] = { __WIN32_STD_INPUT_HANDLE,
-                                              __WIN32_STD_OUTPUT_HANDLE,
-                                              __WIN32_STD_ERROR_HANDLE };
+static const __win32_dword std_handles[3]
+    = { __WIN32_STD_INPUT_HANDLE, __WIN32_STD_OUTPUT_HANDLE, __WIN32_STD_ERROR_HANDLE };
 
 void
 __win32_init_fds(void)
@@ -70,8 +69,8 @@ __win32_init_fds(void)
         if (h == NULL || h == __WIN32_INVALID_HANDLE)
             continue;
         __win32_fds[fd].handle = h;
-        __win32_fds[fd].flags = __WIN32_FD_OPEN | __WIN32_FD_TEXT | __WIN32_FD_NOCLOSE
-            | __win32_type_flags(h);
+        __win32_fds[fd].flags
+            = __WIN32_FD_OPEN | __WIN32_FD_TEXT | __WIN32_FD_NOCLOSE | __win32_type_flags(h);
     }
 }
 
@@ -235,8 +234,9 @@ _open_osfhandle(intptr_t handle, int flags)
 {
     __win32_handle h = (__win32_handle)handle;
     int            text = (flags & O_TEXT) || (!(flags & O_BINARY) && _fmode != O_BINARY);
-    return __win32_new_fd(h, __win32_type_flags(h) | ((flags & O_APPEND) ? __WIN32_FD_APPEND : 0)
-                                 | (text ? __WIN32_FD_TEXT : 0));
+    return __win32_new_fd(h,
+                          __win32_type_flags(h) | ((flags & O_APPEND) ? __WIN32_FD_APPEND : 0)
+                              | (text ? __WIN32_FD_TEXT : 0));
 }
 
 int

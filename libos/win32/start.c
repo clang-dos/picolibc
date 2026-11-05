@@ -39,9 +39,9 @@
 
 extern char **environ;
 
-extern int main(int, char **, char **);
+extern int    main(int, char **, char **);
 extern int __attribute__((__stdcall__, __weak__))
-WinMain(__win32_handle instance, __win32_handle prev, char *cmdline, int show);
+     WinMain(__win32_handle instance, __win32_handle prev, char *cmdline, int show);
 void __main(void);
 void mainCRTStartup(void);
 void WinMainCRTStartup(void);

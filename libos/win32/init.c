@@ -87,4 +87,3 @@ __win32_init(void)
     __win32_init_fds();
     init_environ();
 }
-

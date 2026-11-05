@@ -46,9 +46,9 @@
 extern void (*__CTOR_LIST__[])(void);
 extern void (*__DTOR_LIST__[])(void);
 
-void __main(void);
-void __do_global_ctors(void);
-void __do_global_dtors(void);
+void        __main(void);
+void        __do_global_ctors(void);
+void        __do_global_dtors(void);
 
 void
 __do_global_dtors(void)

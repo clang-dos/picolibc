@@ -44,14 +44,13 @@
  * starts or ends; the linker sorts .CRT$XL* sections by name.
  */
 
-typedef void(__attribute__((__stdcall__)) * __win32_tls_callback)(void *module,
-                                                                  __win32_dword reason,
-                                                                  void *reserved);
+typedef void(__attribute__((__stdcall__))
+             * __win32_tls_callback)(void *module, __win32_dword reason, void *reserved);
 
-unsigned long _tls_index = 0;
+unsigned long        _tls_index = 0;
 
-char _tls_start __attribute__((__section__(".tls"), __used__)) = 0;
-char _tls_end __attribute__((__section__(".tls$ZZZ"), __used__)) = 0;
+char                 _tls_start __attribute__((__section__(".tls"), __used__)) = 0;
+char                 _tls_end __attribute__((__section__(".tls$ZZZ"), __used__)) = 0;
 
 __win32_tls_callback __xl_a __attribute__((__section__(".CRT$XLA"), __used__)) = 0;
 __win32_tls_callback __xl_z __attribute__((__section__(".CRT$XLZ"), __used__)) = 0;

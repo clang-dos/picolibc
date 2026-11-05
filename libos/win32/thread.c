@@ -48,8 +48,8 @@ _beginthreadex(void *security, unsigned stack, unsigned(__stdcall *start)(void *
                unsigned flags, unsigned *id)
 {
     __win32_dword  tid;
-    __win32_handle h = CreateThread(security, stack, (__win32_dword(__stdcall *)(void *))start,
-                                    arg, flags, &tid);
+    __win32_handle h = CreateThread(security, stack, (__win32_dword(__stdcall *)(void *))start, arg,
+                                    flags, &tid);
     if (!h) {
         __win32_error(GetLastError());
         return 0;
@@ -66,7 +66,7 @@ _endthreadex(unsigned status)
 }
 
 struct thunk {
-    void (*start)(void *);
+    void  (*start)(void *);
     void *arg;
 };
 

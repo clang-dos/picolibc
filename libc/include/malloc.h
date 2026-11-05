@@ -116,7 +116,7 @@ void         hfree(void __huge *) __picolibc_export;
 #ifdef _WIN32
 /* The Windows C library's aligned allocation, freed with _aligned_free,
    and the usable size of a block from malloc. */
-void  *_aligned_malloc(size_t __size, size_t __alignment) __malloc_like __warn_unused_result
+void *_aligned_malloc(size_t __size, size_t __alignment) __malloc_like __warn_unused_result
 __picolibc_export;
 void   _aligned_free(void *) __picolibc_export;
 size_t _msize(void *) __picolibc_export;

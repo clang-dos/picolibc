@@ -56,7 +56,7 @@ unlink(const char *path)
     return __win32_error(error);
 }
 
-typedef __win32_bool (__attribute__((__stdcall__)) *move_file_ex_t)(const char *, const char *,
+typedef __win32_bool(__attribute__((__stdcall__)) * move_file_ex_t)(const char *, const char *,
                                                                     __win32_dword);
 
 /* rename() replaces an existing file, as in POSIX. MoveFileExA does that
@@ -68,8 +68,8 @@ rename(const char *from, const char *to)
     static move_file_ex_t move_file_ex;
     static int            looked;
     if (!looked) {
-        move_file_ex = (move_file_ex_t)GetProcAddress(GetModuleHandleA("kernel32.dll"),
-                                                      "MoveFileExA");
+        move_file_ex
+            = (move_file_ex_t)GetProcAddress(GetModuleHandleA("kernel32.dll"), "MoveFileExA");
         looked = 1;
     }
     /* MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED */
@@ -133,8 +133,8 @@ chdir(const char *path)
 char *
 getcwd(char *buf, size_t size)
 {
-    char           tmp[PATH_MAX];
-    __win32_dword  n = GetCurrentDirectoryA(sizeof(tmp), tmp);
+    char          tmp[PATH_MAX];
+    __win32_dword n = GetCurrentDirectoryA(sizeof(tmp), tmp);
     if (n == 0) {
         __win32_error(0);
         return NULL;
@@ -207,7 +207,7 @@ ftruncate(int fd, off_t length)
     __win32_dword low = SetFilePointer(h, 0, &high, __WIN32_FILE_CURRENT);
     long          new_high = (long)((int64_t)length >> 32);
     SetFilePointer(h, (long)(uint32_t)length, &new_high, __WIN32_FILE_BEGIN);
-    int ok = SetEndOfFile(h);
+    int           ok = SetEndOfFile(h);
     __win32_dword error = GetLastError();
     SetFilePointer(h, (long)low, &high, __WIN32_FILE_BEGIN);
     if (!ok)
@@ -299,9 +299,9 @@ readlink(const char * restrict path, char * restrict buf, size_t size)
     return -1;
 }
 
-int _unlink(const char *path) __attribute__((__alias__("unlink")));
-int _rmdir(const char *path) __attribute__((__alias__("rmdir")));
-int _chdir(const char *path) __attribute__((__alias__("chdir")));
+int   _unlink(const char *path) __attribute__((__alias__("unlink")));
+int   _rmdir(const char *path) __attribute__((__alias__("rmdir")));
+int   _chdir(const char *path) __attribute__((__alias__("chdir")));
 char *_getcwd(char *buf, size_t size) __attribute__((__alias__("getcwd")));
-int _access(const char *path, int mode) __attribute__((__alias__("access")));
-int _chmod(const char *path, mode_t mode) __attribute__((__alias__("chmod")));
+int   _access(const char *path, int mode) __attribute__((__alias__("access")));
+int   _chmod(const char *path, mode_t mode) __attribute__((__alias__("chmod")));

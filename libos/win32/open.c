@@ -68,7 +68,8 @@ have_wide(void)
     if (!looked) {
         if (!(GetVersion() & 0x80000000)) {
             __win32_handle k = GetModuleHandleA("kernel32.dll");
-            get_file_attributes_w = (get_file_attributes_w_t)GetProcAddress(k, "GetFileAttributesW");
+            get_file_attributes_w
+                = (get_file_attributes_w_t)GetProcAddress(k, "GetFileAttributesW");
             create_file_w = (create_file_w_t)GetProcAddress(k, "CreateFileW");
         }
         looked = 1;
@@ -78,8 +79,7 @@ have_wide(void)
 
 static __win32_handle
 create(const char *path, const wchar_t *wpath, __win32_dword access,
-       struct __win32_security_attributes *sa, __win32_dword disposition,
-       __win32_dword attributes)
+       struct __win32_security_attributes *sa, __win32_dword disposition, __win32_dword attributes)
 {
     __win32_dword share = __WIN32_FILE_SHARE_READ | __WIN32_FILE_SHARE_WRITE;
     if (wpath)
@@ -143,8 +143,9 @@ win32_open(const char *path, const wchar_t *wpath, int flags, int mode)
     }
 opened:;
     int text = (flags & O_TEXT) || (!(flags & O_BINARY) && _fmode != O_BINARY);
-    int fd = __win32_new_fd(h, __win32_type_flags(h) | ((flags & O_APPEND) ? __WIN32_FD_APPEND : 0)
-                                   | (text ? __WIN32_FD_TEXT : 0));
+    int fd = __win32_new_fd(h,
+                            __win32_type_flags(h) | ((flags & O_APPEND) ? __WIN32_FD_APPEND : 0)
+                                | (text ? __WIN32_FD_TEXT : 0));
     if (fd < 0)
         CloseHandle(h);
     return fd;
@@ -190,7 +191,7 @@ _wopen(const wchar_t *path, int flags, ...)
 FILE *
 _wfopen(const wchar_t *path, const wchar_t *wmode)
 {
-    char mode[8];
+    char   mode[8];
     size_t i;
     for (i = 0; wmode[i] && i < sizeof(mode) - 1; i++)
         mode[i] = (char)wmode[i];

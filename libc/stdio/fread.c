@@ -35,7 +35,7 @@
 #include "../stdlib/mul_overflow.h"
 #endif
 
-extern FILE * const stdin __stdio_weak;
+extern FILE * const stdin  __stdio_weak;
 extern FILE * const stdout __stdio_weak;
 
 size_t
