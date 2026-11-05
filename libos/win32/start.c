@@ -163,53 +163,6 @@ __win32_init_args(int *argcp, char ***argvp)
     *argvp = argv;
 }
 
-/* The environment block holds NAME=value strings and an empty string.
- * Entries that start with '=' (the current directory of each drive, on
- * Windows NT) are left out, as the Microsoft C library does. */
-static void
-init_environ(void)
-{
-    static char *empty[1];
-    environ = empty;
-    const char *block = GetEnvironmentStrings();
-    if (!block)
-        return;
-    size_t count = 0, bytes = 0;
-    for (const char *p = block; *p; p += strlen(p) + 1) {
-        size_t len = strlen(p) + 1;
-        bytes += len;
-        if (*p != '=')
-            count++;
-    }
-    char **env = malloc((count + 1) * sizeof(char *) + bytes);
-    if (!env)
-        return;
-    char  *out = (char *)(env + count + 1);
-    size_t i = 0;
-    for (const char *p = block; *p; p += strlen(p) + 1) {
-        size_t len = strlen(p) + 1;
-        if (*p == '=')
-            continue;
-        memcpy(out, p, len);
-        env[i++] = out;
-        out += len;
-    }
-    env[i] = NULL;
-    environ = env;
-}
-
-void
-__win32_init(void)
-{
-    static int done;
-    if (done)
-        return;
-    done = 1;
-    __win32_heap = GetProcessHeap();
-    __win32_init_fds();
-    init_environ();
-}
-
 #ifdef __i386__
 #define ENTRY __attribute__((__force_align_arg_pointer__, __used__))
 #else

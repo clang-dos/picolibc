@@ -35,6 +35,10 @@ build script puts such a sysroot together. Programs link with
   and `WinMainCRTStartup`. It splits the command line with the Microsoft C
   rules, copies the environment, runs the constructors (`ctors.c`, from
   clang's `__main` call) and calls `main` or `WinMain`.
+- `dllstart.c` is the entry point of DLLs, `DllMainCRTStartup`. Each
+  DLL has its own copy of the library; it runs the DLL's constructors
+  before `DllMain` and its atexit functions and destructors when it is
+  unloaded.
 - `tlssup.c` is the TLS directory, so `__thread` variables (errno among
   them) are native TLS, set up by Windows for every thread.
   `cxa_thread_atexit.c` runs C++ `thread_local` destructors when a thread
@@ -57,3 +61,8 @@ build script puts such a sysroot together. Programs link with
 
 `link` and `symlink` fail with `ENOSYS`, and there are no signals beyond
 `raise`.
+
+The library's thread-local variables are native TLS. Windows before Vista
+sets that up only for the program and the DLLs it loads at startup, not
+for a DLL loaded later with `LoadLibrary`, so on those versions such a DLL
+should not be linked with this library.
