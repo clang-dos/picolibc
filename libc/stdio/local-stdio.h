@@ -199,7 +199,7 @@ bufio_lseek(struct __file_bufio *bf, __off_t offset, int whence)
 }
 
 /*
- * DOS text files: read() and write() turn CR LF into LF and back, so the
+ * DOS and Windows text files: read() and write() turn CR LF into LF and back, so the
  * file position does not move by the bytes the buffer holds. The position
  * is then taken from the file after each transfer, and each LF not yet
  * read counts as the CR LF it was read from.
@@ -211,6 +211,14 @@ static inline bool
 bufio_text(struct __file_bufio *bf)
 {
     return !(bf->bflags & __BFPTR) && __msdos_is_text(_FDEV_BUFIO_FD(bf));
+}
+#elif defined(_WIN32)
+int __win32_is_text(int fd);
+
+static inline bool
+bufio_text(struct __file_bufio *bf)
+{
+    return !(bf->bflags & __BFPTR) && __win32_is_text(_FDEV_BUFIO_FD(bf));
 }
 #else
 static inline bool
@@ -325,6 +333,18 @@ bufio_remove_file(FILE *f)
 int  __stdio_flags(const char *mode, int *optr);
 
 void _bufio_exit_flush(void) __weak;
+
+/*
+ * The standard streams are weak references, so that a program that never
+ * uses one does not link it. A COFF linker (Windows) does not look in
+ * archives for a weak reference, and then not for later strong ones to
+ * the same name either, so there they are strong.
+ */
+#ifdef _WIN32
+#define __stdio_weak
+#else
+#define __stdio_weak __weak
+#endif
 
 #ifdef __STDIO_LOCKING
 void __flockfile_init(FILE *f);

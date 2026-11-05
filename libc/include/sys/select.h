@@ -36,6 +36,9 @@ SUCH DAMAGE.
 #include <sys/_timeval.h>
 #include <sys/_timespec.h>
 #include <sys/_select.h>
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
 
 #if !defined(_SIGSET_T_DECLARED)
 #define _SIGSET_T_DECLARED
@@ -44,7 +47,7 @@ typedef __sigset_t sigset_t;
 
 _BEGIN_STD_C
 
-#if __POSIX_VISIBLE >= 200112
+#if __POSIX_VISIBLE >= 200112 && !defined(_WIN32)
 int pselect(int __n, fd_set *__readfds, fd_set *__writefds, fd_set *__exceptfds,
             const struct timespec *__timeout, const sigset_t *__set);
 #endif

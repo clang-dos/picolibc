@@ -358,7 +358,9 @@ if thread_local_storage
   # For shared libraries, we need to use a TLS model that supports dynamic loading
   # local-exec is only valid for executables and static libraries
   # global-dynamic is the most flexible model for shared libraries
-  if build_shared
+  # On Windows the static library also goes into DLLs, whose TLS index is
+  # not 0, and a TLS access through _tls_index brings in the TLS directory.
+  if build_shared or get_option('os-win32')
     tls_model = 'global-dynamic'
   else
     tls_model = get_option('tls-model')

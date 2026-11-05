@@ -136,6 +136,8 @@ option('os-msdos', type: 'boolean', value: false,
        description: 'Include libos/msdos in libc: DOS startup code and system calls (i8086).')
 option('os-amigaos', type: 'boolean', value: false,
        description: 'Include libos/amigaos in libc: AmigaOS startup code, malloc and system calls (m68k).')
+option('os-win32', type: 'boolean', value: false,
+       description: 'Include libos/win32 in libc: Win32 startup code, malloc and system calls on kernel32 (i386 and x86_64 Windows).')
 option('os-tos', type: 'boolean', value: false,
        description: 'Include libos/tos in libc: Atari TOS (GEMDOS) startup code and system calls (m68k).')
 option('fake-semihost', type: 'boolean', value: true,

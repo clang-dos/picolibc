@@ -322,8 +322,9 @@ useconds_t ualarm(useconds_t __useconds, useconds_t __interval) __picolibc_expor
 #endif
 
 #if __BSD_VISIBLE || __POSIX_VISIBLE >= 200112 || __XSI_VISIBLE >= 500
-#if !(defined(_WINSOCK_H) || defined(_WINSOCKAPI_) || defined(__USE_W32_SOCKETS))
-/* winsock[2].h defines as __stdcall, and with int as 2nd arg */
+#if !(defined(_WINSOCK_H) || defined(_WINSOCKAPI_) || defined(__USE_W32_SOCKETS) || defined(_WIN32))
+/* winsock[2].h defines as __stdcall, and with int as 2nd arg; on Windows
+ * gethostname is only the one in winsock. */
 int gethostname(char *__name, size_t __len) __picolibc_export;
 #endif
 #endif

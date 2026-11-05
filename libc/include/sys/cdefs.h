@@ -296,7 +296,12 @@
     extern __typeof(sym) aliassym __attribute__((__alias__(__STRING(sym))))
 #define __strong_reference_dup(sym, aliassym)                                    \
     extern __typeof(aliassym) aliassym __attribute__((__alias__(__STRING(sym))))
-#if __has_attribute(__weak__)
+#if defined(_WIN32)
+/* A weak alias in COFF is a weak external, which the linker does not look
+ * for in archives. Programs can still define the name themselves, since
+ * the library member is then not linked. */
+#define __weak_reference(sym, aliassym) __strong_reference(sym, aliassym)
+#elif __has_attribute(__weak__)
 #define __weak_reference(sym, aliassym)                                               \
     extern __typeof(sym) aliassym __attribute__((__weak__, __alias__(__STRING(sym))))
 #endif

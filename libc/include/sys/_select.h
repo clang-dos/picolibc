@@ -30,6 +30,10 @@ SUCH DAMAGE.
 #ifndef _SYS__SELECT_H
 #define _SYS__SELECT_H
 
+/* On Windows, fd_set and select() are those of winsock, for sockets
+ * only; <sys/select.h> includes <winsock2.h>. */
+#ifndef _WIN32
+
 _BEGIN_STD_C
 
 #define _SYS_TYPES_FD_SET
@@ -81,5 +85,7 @@ int select(int __n, fd_set *__readfds, fd_set *__writefds, fd_set *__exceptfds,
            struct timeval *__timeout);
 
 _END_STD_C
+
+#endif /* !_WIN32 */
 
 #endif /* sys/_select.h */
