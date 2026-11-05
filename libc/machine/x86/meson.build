@@ -53,6 +53,18 @@ srcs_machine = [
   'tls.c',
 ]
 
+# Windows has its own interrupt handling and thread-local storage.
+if get_option('os-win32')
+  srcs_machine_bare = ['interrupt.c', 'interrupt.S', 'tcb.S', 'tls.c']
+  srcs_machine_all = srcs_machine
+  srcs_machine = []
+  foreach f : srcs_machine_all
+    if not (f in srcs_machine_bare)
+      srcs_machine += f
+    endif
+  endforeach
+endif
+
 subdir('machine')
 subdir('sys')
 

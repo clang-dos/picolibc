@@ -49,8 +49,8 @@ fflush(FILE *stream)
 {
 #ifdef __STDIO_EXIT_FLUSH
     if (stream == NULL) {
-        extern FILE * const stdout __weak;
-        extern FILE * const stderr __weak;
+        extern FILE * const stdout __stdio_weak;
+        extern FILE * const stderr __stdio_weak;
         if (_bufio_exit_flush)
             _bufio_exit_flush();
         if (&stdout)

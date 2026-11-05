@@ -485,6 +485,18 @@ FILE *fopen(const char *path, const char *mode) __malloc_like_with_free(fclose, 
 __picolibc_export;
 FILE *freopen(const char *path, const char *mode, FILE *stream) __nonnull((3)) __picolibc_export;
 FILE *fdopen(int, const char *) __malloc_like_with_free(fclose, 1) __picolibc_export;
+#ifdef _WIN32
+#ifndef __win32_wchar
+#ifdef __cplusplus
+#define __win32_wchar wchar_t
+#else
+#define __win32_wchar __WCHAR_TYPE__
+#endif
+#endif
+/* Opens a file by its wide (UTF-16) name, as the Windows C library does. */
+FILE *_wfopen(const __win32_wchar *path, const __win32_wchar *mode)
+    __malloc_like_with_free(fclose, 1) __picolibc_export;
+#endif
 FILE *fmemopen(void *buf, size_t size, const char *mode) __malloc_like_with_free(fclose, 1)
 __picolibc_export;
 #if __POSIX_VISIBLE >= 200809

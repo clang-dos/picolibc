@@ -43,10 +43,21 @@ typedef __time_t time_t;
 
 /*
  * Structure returned by gettimeofday(2) system call, and used in other calls.
+ * Windows has the layout of winsock, which also defines it.
  */
+#ifdef _WIN32
+#ifndef _TIMEVAL_DEFINED
+#define _TIMEVAL_DEFINED
+struct timeval {
+    long tv_sec;  /* seconds */
+    long tv_usec; /* and microseconds */
+};
+#endif
+#else
 struct timeval {
     time_t      tv_sec;  /* seconds */
     suseconds_t tv_usec; /* and microseconds */
 };
+#endif
 
 #endif /* !_SYS__TIMEVAL_H_ */

@@ -1,0 +1,20 @@
+# 32-bit Windows (Windows 95, NT 3.1 and later), built with the clang-dos
+# LLVM toolchain (https://github.com/clang-dos/llvm) for the libos/win32
+# layer. The library calls only kernel32.dll. -fno-emulated-tls keeps
+# thread-local variables in native TLS, which libos/win32 sets up, and
+# -fno-auto-import keeps the library from needing the mingw-w64 runtime's
+# pseudo relocations.
+[binaries]
+c = ['clang', '--target=i386-pc-windows4.0-gnu', '-march=i386', '-nostdlib', '-nostdlibinc', '-fno-auto-import', '-fno-emulated-tls']
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'windows'
+cpu_family = 'x86'
+cpu = 'i386'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true
