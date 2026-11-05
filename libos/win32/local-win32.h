@@ -172,11 +172,7 @@ __WIN32_API __win32_handle CreateFileA(const char *name, __win32_dword access,
                                        __win32_dword share, void *security,
                                        __win32_dword disposition, __win32_dword flags,
                                        __win32_handle template_file);
-__WIN32_API __win32_handle CreateFileW(const wchar_t *name, __win32_dword access,
-                                       __win32_dword share, void *security,
-                                       __win32_dword disposition, __win32_dword flags,
-                                       __win32_handle template_file);
-__WIN32_API __win32_dword  GetFileAttributesW(const wchar_t *name);
+__WIN32_API __win32_dword  GetVersion(void);
 __WIN32_API int            WideCharToMultiByte(unsigned int codepage, __win32_dword flags,
                                                const wchar_t *wide, int nwide, char *multi,
                                                int nmulti, const char *defchar,

@@ -51,6 +51,31 @@
 /* From libc/stdio/sflags.c */
 int __stdio_flags(const char *mode, int *optr);
 
+typedef __win32_handle(__stdcall *create_file_w_t)(const wchar_t *, __win32_dword, __win32_dword,
+                                                   void *, __win32_dword, __win32_dword,
+                                                   __win32_handle);
+typedef __win32_dword(__stdcall *get_file_attributes_w_t)(const wchar_t *);
+
+static create_file_w_t         create_file_w;
+static get_file_attributes_w_t get_file_attributes_w;
+
+/* The wide functions, found at run time: Windows 9x has only stubs for
+ * them, and programs for it should not import them. */
+static int
+have_wide(void)
+{
+    static volatile int looked;
+    if (!looked) {
+        if (!(GetVersion() & 0x80000000)) {
+            __win32_handle k = GetModuleHandleA("kernel32.dll");
+            get_file_attributes_w = (get_file_attributes_w_t)GetProcAddress(k, "GetFileAttributesW");
+            create_file_w = (create_file_w_t)GetProcAddress(k, "CreateFileW");
+        }
+        looked = 1;
+    }
+    return create_file_w && get_file_attributes_w;
+}
+
 static __win32_handle
 create(const char *path, const wchar_t *wpath, __win32_dword access,
        struct __win32_security_attributes *sa, __win32_dword disposition,
@@ -58,7 +83,7 @@ create(const char *path, const wchar_t *wpath, __win32_dword access,
 {
     __win32_dword share = __WIN32_FILE_SHARE_READ | __WIN32_FILE_SHARE_WRITE;
     if (wpath)
-        return CreateFileW(wpath, access, share, sa, disposition, attributes, NULL);
+        return create_file_w(wpath, access, share, sa, disposition, attributes, NULL);
     return CreateFileA(path, access, share, sa, disposition, attributes, NULL);
 }
 
@@ -101,7 +126,7 @@ win32_open(const char *path, const wchar_t *wpath, int flags, int mode)
     __win32_handle h = create(path, wpath, access, &sa, disposition, attributes);
     if (h == __WIN32_INVALID_HANDLE) {
         __win32_dword error = GetLastError();
-        __win32_dword attr = wpath ? GetFileAttributesW(wpath) : GetFileAttributesA(path);
+        __win32_dword attr = wpath ? get_file_attributes_w(wpath) : GetFileAttributesA(path);
         if (attr != __WIN32_INVALID_FILE_ATTRIBUTES && (attr & __WIN32_FILE_ATTRIBUTE_DIR)) {
             /* Windows NT opens a directory with backup semantics, for
              * fstat and fsync; Windows 9x can't. */
@@ -114,8 +139,6 @@ win32_open(const char *path, const wchar_t *wpath, int flags, int mode)
             errno = EISDIR;
             return -1;
         }
-        if (wpath && error == __WIN32_ERROR_CALL_NOT_IMPLEMENTED)
-            return -2;
         return __win32_error(error);
     }
 opened:;
@@ -152,9 +175,8 @@ _wopen(const wchar_t *path, int flags, ...)
         mode = va_arg(ap, int);
         va_end(ap);
     }
-    int fd = win32_open(NULL, path, flags, mode);
-    if (fd != -2)
-        return fd;
+    if (have_wide())
+        return win32_open(NULL, path, flags, mode);
 
     /* Windows 9x: use the ANSI name. */
     char name[PATH_MAX];
