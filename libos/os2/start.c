@@ -50,11 +50,11 @@
 
 typedef const char __OS2_FAR *fstr;
 
-fstr   __os2_env;
-fstr   __os2_cmdline;
-char **environ;
+fstr                          __os2_env;
+fstr                          __os2_cmdline;
+char                        **environ;
 
-extern int main(int, char **, char **);
+extern int                    main(int, char **, char **);
 
 #ifndef __i386__
 extern char     __heap_start[];

@@ -83,7 +83,7 @@ long
 __os2_unix_time(unsigned short date, unsigned short time)
 {
     static const unsigned short days[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-    unsigned y = 1980 + (date >> 9), m = (date >> 5) & 15, d = date & 31;
+    unsigned                    y = 1980 + (date >> 9), m = (date >> 5) & 15, d = date & 31;
     if (m < 1 || m > 12 || d < 1)
         return 0;
     long n = (long)(y - 1970) * 365 + (y - 1969) / 4 + days[m - 1] + d - 1;

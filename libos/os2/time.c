@@ -40,14 +40,13 @@
 /* The clock is local time; the time zone, when OS/2 2.x knows it, gives
  * UTC. */
 int
-gettimeofday(struct timeval *restrict tv, void *restrict tz)
+gettimeofday(struct timeval * restrict tv, void * restrict tz)
 {
     (void)tz;
     struct __os2_datetime dt;
     if (DosGetDateTime(&dt))
         return -1;
-    unsigned short date
-        = (unsigned short)(((dt.year - 1980) << 9) | (dt.month << 5) | dt.day);
+    unsigned short date = (unsigned short)(((dt.year - 1980) << 9) | (dt.month << 5) | dt.day);
     unsigned short time = (unsigned short)((dt.hours << 11) | (dt.minutes << 5));
     long           t = __os2_unix_time(date, time) + dt.seconds;
     if (dt.timezone != -1)

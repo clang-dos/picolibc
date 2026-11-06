@@ -87,8 +87,8 @@ sbrk(ptrdiff_t incr)
     }
 #endif
     char *old = __os2_brk;
-    if (incr < 0 ? (size_t)-incr > (size_t)(old - __os2_heap_base)
-                 : (size_t)incr > (size_t)(__os2_heap_end - old)) {
+    if (incr<0 ? (size_t)-incr > (size_t)(old - __os2_heap_base) : (size_t)incr>(size_t)(
+            __os2_heap_end - old)) {
         errno = ENOMEM;
         return (void *)-1;
     }
