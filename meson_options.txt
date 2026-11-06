@@ -140,6 +140,8 @@ option('os-win32', type: 'boolean', value: false,
        description: 'Include libos/win32 in libc: Win32 startup code, malloc and system calls on kernel32 (i386 and x86_64 Windows).')
 option('os-tos', type: 'boolean', value: false,
        description: 'Include libos/tos in libc: Atari TOS (GEMDOS) startup code and system calls (m68k).')
+option('os-os2', type: 'boolean', value: false,
+       description: 'Include libos/os2 in libc: OS/2 startup code and system calls (i8086 for OS/2 1.x, i386 for 2.x and later).')
 option('fake-semihost', type: 'boolean', value: true,
        description: 'create fake semihost library to link tests [ignored]')
 option('crt0-test', type: 'string', value: '',
