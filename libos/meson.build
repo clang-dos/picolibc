@@ -62,6 +62,10 @@ if get_option('os-tos')
   subdir('tos')
 endif
 
+if get_option('os-os2')
+  subdir('os2')
+endif
+
 if get_option('os-win32')
   subdir('win32')
 endif

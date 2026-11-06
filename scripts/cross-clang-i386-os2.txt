@@ -1,0 +1,18 @@
+# 32-bit OS/2 (2.0 and later), built with the clang-dos LLVM toolchain
+# (https://github.com/clang-dos/llvm). Objects are ELF; programs are LX
+# executables linked by a Watcom-style linker (wlink or JWlink).
+[binaries]
+c = ['clang', '--target=i386-pc-os2', '-march=i386', '-nostdlib']
+c_ld = '@DIRNAME@/i8086-msdos-ld'
+ar = 'llvm-ar'
+nm = 'llvm-nm'
+strip = 'llvm-strip'
+
+[host_machine]
+system = 'os2'
+cpu_family = 'x86'
+cpu = 'i386'
+endian = 'little'
+
+[properties]
+skip_sanity_check = true

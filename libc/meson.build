@@ -77,6 +77,7 @@ endif
 src_cpart += get_variable('src_os_msdos', [])
 src_cpart += get_variable('src_os_amigaos', [])
 src_cpart += get_variable('src_os_tos', [])
+src_cpart += get_variable('src_os_os2', [])
 src_cpart += get_variable('src_os_win32', [])
 
 subdir('include')
